@@ -31,6 +31,18 @@ const SearchForm = () => {
       notificationAlertRef.current.notificationAlert(options);
       return;
     }
+    if(search.length === 0){
+      let options = {};
+      options = {
+        place: "tr",
+        message: "Please enter a company name",
+        type: "danger",
+        icon: "tim-icons icon-bell-55",
+        autoDismiss: 7,
+      };
+      notificationAlertRef.current.notificationAlert(options);
+      return;
+    }
     console.log(search);
     console.log(fromYear);
     console.log(toYear);
