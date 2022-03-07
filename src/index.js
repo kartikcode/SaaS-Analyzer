@@ -16,10 +16,11 @@
 */
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
+import HomeLayout from "layouts/Home/Home.js";
 import RTLLayout from "layouts/RTL/RTL.js";
 
 import "assets/css/nucleo-icons.css";
@@ -33,7 +34,7 @@ ReactDOM.render(
       <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
       <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
       <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
-      <Redirect from="/" to="/admin/dashboard" />
+      <Route path="/" render={(props) => <HomeLayout {...props} />} />
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")
