@@ -22,6 +22,7 @@ import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
 import HomeLayout from "layouts/Home/Home.js";
 import RTLLayout from "layouts/RTL/RTL.js";
+import TabLayout from "layouts/Tab/Tab.js";
 
 import "assets/css/nucleo-icons.css";
 import "react-notification-alert/dist/animate.css";
@@ -34,6 +35,7 @@ ReactDOM.render(
       <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
       <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
       <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
+      <Route path="/tab" render={(props) => <TabLayout {...props} />} />
       <Route path="/" render={(props) => <HomeLayout {...props} />} />
     </Switch>
   </BrowserRouter>,
