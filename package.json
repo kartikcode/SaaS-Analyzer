@@ -25,7 +25,7 @@
     "react-notification-alert": "0.0.13",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.1",
-    "react-select": "3.1.1",
+    "react-select": "^3.1.1",
     "react-table": "7.6.2",
     "reactstrap": "8.7.1"
   },

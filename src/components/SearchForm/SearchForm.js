@@ -2,10 +2,22 @@ import React from "react";
 
 import { FormGroup, Label, Input, Button } from "reactstrap";
 import NotificationAlert from "react-notification-alert";
+import Select from 'react-select';
+import { options } from "variables/companies";
+import "./SearchForm.css"
+
+const customStyles = {
+  option: (provided, state) => ({
+    ...provided, 
+    // backgroundColor: '#1e1e2f',
+    borderBottom: '1px dotted black',
+    color: state.isSelected ? 'red' : 'blue',
+    padding: 20,
+  }),
+};
 
 const SearchForm = () => {
   const [search, setSearch] = React.useState("");
-  const searchForm = React.useRef(null);
 
   const [fromYear, setFromYear] = React.useState(2021);
   const [toYear, setToYear] = React.useState(2021);
@@ -56,14 +68,12 @@ const SearchForm = () => {
       </div>
       <form onSubmit={(e) => onSubmitButtonClick(e)}>
         <FormGroup>
-          <Label for="companyName">Company Name</Label>
-          <Input
-            type="text"
-            id="companyName"
-            placeholder="Company Name"
+          <Select
+            styles={customStyles}
+            className="select-search-bar"
             value={search}
-            ref={searchForm}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={setSearch}
+            options={options}
           />
         </FormGroup>
         <div className="form-row">
@@ -139,5 +149,6 @@ const SearchForm = () => {
     </>
   );
 };
+
 
 export default SearchForm;
