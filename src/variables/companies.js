@@ -1,4 +1,4 @@
-export const options = [
+export const searchOptions = [
     { value: '30DC INC', label: '30DC INC' },
     { value: '3D PIONEER SYSTEMS INC', label: '3D PIONEER SYSTEMS INC' },
     { value: '8X8 INC', label: '8X8 INC' },
