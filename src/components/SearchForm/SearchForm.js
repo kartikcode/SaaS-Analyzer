@@ -28,7 +28,7 @@ const quarterOptions = [
 ]
 
 const SearchForm = () => {
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState({value:"", label:""});
 
   const [fromYear, setFromYear] = React.useState(yearOptions[1]);
   const [toYear, setToYear] = React.useState(yearOptions[0]);
