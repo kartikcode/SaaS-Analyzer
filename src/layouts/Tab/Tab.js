@@ -14,6 +14,8 @@ import {
   Col,
 } from "reactstrap";
 
+import Select from "react-select";
+
 import { chartExample6, chartExample7 } from "variables/charts.js";
 
 import ChartCard from "components/Charts/ChartCard";
@@ -21,6 +23,27 @@ import Footer from "components/Footer/Footer";
 
 const TabLayout = () => {
   const [pageTabs, setpageTabs] = useState("1");
+  const multipleSelectValues1 = [
+    { value: "0", label: "No of Qualified Leads" },
+    {
+      value: "1",
+      label: "No of new Accounts per month",
+    },
+    {
+      value: "2",
+      label: "Percent conversion rate of each stage",
+    },
+    { value: "3", label: "Length of sales cycle" },
+    { value: "4", label: "Customer Acquisition Cost" },
+  ];
+  const [multipleSelect1, setmultipleSelect1] = React.useState(
+    multipleSelectValues1
+  );
+  // const [multipleSelect2, setmultipleSelect2] = React.useState(null);
+  // const [multipleSelect3, setmultipleSelect3] = React.useState(null);
+  // const [multipleSelect4, setmultipleSelect4] = React.useState(null);
+
+  
   return (
     <>
       <div className="container full-width">
@@ -93,25 +116,55 @@ const TabLayout = () => {
                   <TabPane tabId="1">
                     <h4 className="h4 text-center">
                       How efficient and predictible is your sales funnel?
-                    </h4>{" "}
+                    </h4>
+                    <br />
+                    <Row>
+                      <Col md="4">
+                        <h4 className="h4 text-white">
+                          Select what to display:
+                        </h4>
+                      </Col>
+                      <Col lg="8" md="8" sm="3">
+                        <Select
+                          className="react-select info"
+                          classNamePrefix="react-select"
+                          placeholder="Choose metrics"
+                          name="multipleSelect"
+                          closeMenuOnSelect={false}
+                          isMulti
+                          value={multipleSelect1}
+                          onChange={(value) => {
+                            if (value == null) setmultipleSelect1([]);
+                            else setmultipleSelect1(value);
+                          }}
+                          options={multipleSelectValues1}
+                        />
+                      </Col>
+                    </Row>
                     <br />
                     <Row>
                       <Col>
                         <ChartCard
                           type="line"
-                          label="No of Qualified Leads"
+                          label={multipleSelectValues1[0].label}
                           mainValue="7500"
                           chartObject={chartExample6}
-                          isVisible={true}
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[0].value
+                          )}
                         />
                       </Col>
                       <Col>
                         <ChartCard
                           type="line"
-                          label="No of new Accounts per month"
+                          label={multipleSelectValues1[1].label}
                           mainValue="750000"
                           chartObject={chartExample6}
-                          isVisible
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[1].value
+                          )}
                         />
                       </Col>
                     </Row>
@@ -119,10 +172,13 @@ const TabLayout = () => {
                       <Col>
                         <ChartCard
                           type="bar"
-                          label="Persent conversion rate of each stage"
+                          label={multipleSelectValues1[2].label}
                           mainValue="7500"
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[2].value
+                          )}
                           chartObject={chartExample7}
-                          isVisible
                         />
                       </Col>
                     </Row>
@@ -130,19 +186,25 @@ const TabLayout = () => {
                       <Col>
                         <ChartCard
                           type="bar"
-                          label="Length of sales cycle"
+                          label={multipleSelectValues1[3].label}
                           mainValue="7500"
                           chartObject={chartExample7}
-                          isVisible
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[3].value
+                          )}
                         />
                       </Col>
                       <Col>
                         <ChartCard
                           type="line"
-                          label="Customer Acquisition Cost"
+                          label={multipleSelectValues1[4].label}
                           mainValue="96545"
                           chartObject={chartExample6}
-                          isVisible
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[4].value
+                          )}
                         />
                       </Col>
                     </Row>
