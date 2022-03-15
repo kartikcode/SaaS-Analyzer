@@ -82,9 +82,10 @@ const SearchForm = () => {
       <div className="rna-container">
         <NotificationAlert ref={notificationAlertRef} />
       </div>
+      {/* <h1 className="h1 text-white">Search company</h1> */}
       <form onSubmit={(e) => onSubmitButtonClick(e)}>
         <FormGroup>
-          <Label for="search">Search</Label>
+          <Label for="search">Company Name</Label>
           <Select
             styles={customStyles}
             className="react-select info"

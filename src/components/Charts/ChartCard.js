@@ -3,10 +3,10 @@ import { Card, CardHeader, CardBody, CardTitle } from "reactstrap";
 import { Line, Bar } from "react-chartjs-2";
 
 const ChartCard = ({ type, label, mainValue, chartObject, isVisible }) => {
-  if(!isVisible) return (<></>);
+  if (!isVisible) return <></>;
   return (
     <>
-      <Card className="card-chart">
+      <Card className="card-chart col m-1">
         <CardHeader>
           <h5 className="card-category">{label}</h5>
           <CardTitle tag="h3">
