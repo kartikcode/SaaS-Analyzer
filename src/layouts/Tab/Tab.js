@@ -43,7 +43,6 @@ const TabLayout = () => {
   // const [multipleSelect3, setmultipleSelect3] = React.useState(null);
   // const [multipleSelect4, setmultipleSelect4] = React.useState(null);
 
-  
   return (
     <>
       <div className="container full-width">
@@ -67,7 +66,6 @@ const TabLayout = () => {
                   <NavItem>
                     <NavLink
                       data-toggle="tab"
-                      href="#acquisition"
                       className={pageTabs === "1" ? "active" : ""}
                       onClick={() => setpageTabs("1")}
                     >
@@ -78,7 +76,6 @@ const TabLayout = () => {
                   <NavItem>
                     <NavLink
                       data-toggle="tab"
-                      href="#engagement"
                       className={pageTabs === "2" ? "active" : ""}
                       onClick={() => setpageTabs("2")}
                     >
@@ -89,7 +86,6 @@ const TabLayout = () => {
                   <NavItem>
                     <NavLink
                       data-toggle="tab"
-                      href="#revenue"
                       className={pageTabs === "3" ? "active" : ""}
                       onClick={() => setpageTabs("3")}
                     >
@@ -100,7 +96,6 @@ const TabLayout = () => {
                   <NavItem>
                     <NavLink
                       data-toggle="tab"
-                      href="#economics"
                       className={pageTabs === "4" ? "active" : ""}
                       onClick={() => setpageTabs("4")}
                     >
@@ -143,70 +138,60 @@ const TabLayout = () => {
                     </Row>
                     <br />
                     <Row>
-                      <Col>
-                        <ChartCard
-                          type="line"
-                          label={multipleSelectValues1[0].label}
-                          mainValue="7500"
-                          chartObject={chartExample6}
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[0].value
-                          )}
-                        />
-                      </Col>
-                      <Col>
-                        <ChartCard
-                          type="line"
-                          label={multipleSelectValues1[1].label}
-                          mainValue="750000"
-                          chartObject={chartExample6}
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[1].value
-                          )}
-                        />
-                      </Col>
+                      <ChartCard
+                        type="line"
+                        label={multipleSelectValues1[0].label}
+                        mainValue="7500"
+                        chartObject={chartExample6}
+                        isVisible={multipleSelect1.some(
+                          (selection) =>
+                            selection.value === multipleSelectValues1[0].value
+                        )}
+                      />
+                      <ChartCard
+                        type="line"
+                        label={multipleSelectValues1[1].label}
+                        mainValue="750000"
+                        chartObject={chartExample6}
+                        isVisible={multipleSelect1.some(
+                          (selection) =>
+                            selection.value === multipleSelectValues1[1].value
+                        )}
+                      />
                     </Row>
                     <Row>
-                      <Col>
-                        <ChartCard
-                          type="bar"
-                          label={multipleSelectValues1[2].label}
-                          mainValue="7500"
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[2].value
-                          )}
-                          chartObject={chartExample7}
-                        />
-                      </Col>
+                      <ChartCard
+                        type="bar"
+                        label={multipleSelectValues1[2].label}
+                        mainValue="7500"
+                        isVisible={multipleSelect1.some(
+                          (selection) =>
+                            selection.value === multipleSelectValues1[2].value
+                        )}
+                        chartObject={chartExample7}
+                      />
                     </Row>
                     <Row>
-                      <Col>
-                        <ChartCard
-                          type="bar"
-                          label={multipleSelectValues1[3].label}
-                          mainValue="7500"
-                          chartObject={chartExample7}
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[3].value
-                          )}
-                        />
-                      </Col>
-                      <Col>
-                        <ChartCard
-                          type="line"
-                          label={multipleSelectValues1[4].label}
-                          mainValue="96545"
-                          chartObject={chartExample6}
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[4].value
-                          )}
-                        />
-                      </Col>
+                      <ChartCard
+                        type="bar"
+                        label={multipleSelectValues1[3].label}
+                        mainValue="7500"
+                        chartObject={chartExample7}
+                        isVisible={multipleSelect1.some(
+                          (selection) =>
+                            selection.value === multipleSelectValues1[3].value
+                        )}
+                      />
+                      <ChartCard
+                        type="line"
+                        label={multipleSelectValues1[4].label}
+                        mainValue="96545"
+                        chartObject={chartExample6}
+                        isVisible={multipleSelect1.some(
+                          (selection) =>
+                            selection.value === multipleSelectValues1[4].value
+                        )}
+                      />
                     </Row>
                   </TabPane>
                   <TabPane tabId="2">
@@ -215,46 +200,38 @@ const TabLayout = () => {
                     </h4>{" "}
                     <br />
                     <Row>
-                      <Col>
-                        <ChartCard
-                          type="line"
-                          label="No active users"
-                          mainValue="5000"
-                          chartObject={chartExample6}
-                          isVisible
-                        />
-                      </Col>
+                      <ChartCard
+                        type="line"
+                        label="No active users"
+                        mainValue="5000"
+                        chartObject={chartExample6}
+                        isVisible
+                      />
                     </Row>
                     <Row>
-                      <Col>
-                        <ChartCard
-                          type="bar"
-                          label="DAU/MAU Ratio"
-                          mainValue="5.12"
-                          chartObject={chartExample7}
-                          isVisible
-                        />
-                      </Col>
-                      <Col>
-                        <ChartCard
-                          type="line"
-                          label="Percentage penetration"
-                          mainValue="69"
-                          chartObject={chartExample6}
-                          isVisible
-                        />
-                      </Col>
+                      <ChartCard
+                        type="bar"
+                        label="DAU/MAU Ratio"
+                        mainValue="5.12"
+                        chartObject={chartExample7}
+                        isVisible
+                      />
+                      <ChartCard
+                        type="line"
+                        label="Percentage penetration"
+                        mainValue="69"
+                        chartObject={chartExample6}
+                        isVisible
+                      />
                     </Row>
                     <Row>
-                      <Col>
-                        <ChartCard
-                          type="line"
-                          label="Net Promoter Score"
-                          mainValue="69"
-                          chartObject={chartExample6}
-                          isVisible
-                        />
-                      </Col>
+                      <ChartCard
+                        type="line"
+                        label="Net Promoter Score"
+                        mainValue="69"
+                        chartObject={chartExample6}
+                        isVisible
+                      />
                     </Row>
                   </TabPane>
                   <TabPane tabId="3">
