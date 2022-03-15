@@ -14,6 +14,7 @@ import {
 import SearchForm from "components/SearchForm/SearchForm";
 import Footer from "components/Footer/Footer";
 import CompareForm from "components/CompareForm/CompareForm";
+import ExtractForm from "components/ExtractForm/ExtractForm";
 
 const HomeLayout = () => {
   const [horizontalTabs, sethorizontalTabs] = React.useState("search");
@@ -54,6 +55,15 @@ const HomeLayout = () => {
                       <span role="button">Compare two companies</span>
                     </NavLink>
                   </NavItem>
+                  <NavItem>
+                    <NavLink
+                      data-toggle="tab"
+                      className={horizontalTabs === "extract" ? "active" : ""}
+                      onClick={(e) => changeActiveTab(e, "extract")}
+                    >
+                      <span role="button">Form Data Extraction</span>
+                    </NavLink>
+                  </NavItem>
                 </Nav>
                 <TabContent className="tab-space" activeTab={horizontalTabs}>
                   <TabPane tabId="search">
@@ -61,6 +71,9 @@ const HomeLayout = () => {
                   </TabPane>
                   <TabPane tabId="compare">
                     <CompareForm />
+                  </TabPane>
+                  <TabPane tabId="extract">
+                    <ExtractForm />
                   </TabPane>
                 </TabContent>
               </CardBody>

@@ -29,6 +29,7 @@ import "assets/css/nucleo-icons.css";
 import "react-notification-alert/dist/animate.css";
 import "assets/scss/black-dashboard-pro-react.scss?v=1.2.0";
 import "assets/demo/demo.css";
+import ExtractLayout from "layouts/Extract/Extract";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -38,6 +39,7 @@ ReactDOM.render(
       <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
       <Route path="/tab" render={(props) => <TabLayout {...props} />} />
       <Route path="/compare" render={(props) => <CompareLayout {...props} />} />
+      <Route path="/extract" render={(props) => <ExtractLayout {...props} />} />
       <Route path="/" render={(props) => <HomeLayout {...props} />} />
     </Switch>
   </BrowserRouter>,
