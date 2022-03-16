@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://demos.creative-tim.com/black-dashboard-pro-react/#/admin/dashboard",
   "dependencies": {
+    "axios": "^0.26.1",
     "bootstrap": "4.5.3",
     "chart.js": "2.9.4",
     "classnames": "2.2.6",
