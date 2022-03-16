@@ -27,8 +27,15 @@ const quarterOptions = [
   { value: "Q4", label: "Q4" },
 ];
 
-const SearchForm = () => {
-  const [search, setSearch] = React.useState({ value: "", label: "" });
+const CompareForm = () => {
+  const [searchCompanyA, setSearchCompanyA] = React.useState({
+    value: "",
+    label: "",
+  });
+  const [searchCompanyB, setSearchCompanyB] = React.useState({
+    value: "",
+    label: "",
+  });
   const [fromYear, setFromYear] = React.useState(yearOptions[1]);
   const [toYear, setToYear] = React.useState(yearOptions[0]);
   const [fromQuater, setFromQuater] = React.useState(quarterOptions[0]);
@@ -55,7 +62,19 @@ const SearchForm = () => {
       notificationAlertRef.current.notificationAlert(options);
       return;
     }
-    if (search.value.length === 0) {
+    if (searchCompanyA.value.length === 0) {
+      let options = {};
+      options = {
+        place: "tr",
+        message: "Please enter a company name",
+        type: "danger",
+        icon: "tim-icons icon-bell-55",
+        autoDismiss: 7,
+      };
+      notificationAlertRef.current.notificationAlert(options);
+      return;
+    }
+    if (searchCompanyB.value.length === 0) {
       let options = {};
       options = {
         place: "tr",
@@ -68,33 +87,46 @@ const SearchForm = () => {
       return;
     }
     console.log(
-      search.value,
+      searchCompanyA.value,
+      searchCompanyB.value,
       fromYear.value,
       toYear.value,
       fromQuater.value,
       toQuater.value
     );
-    // redirect to /tab
-    history.push("/tab");
+    history.push("/compare");
   };
   return (
     <>
       <div className="rna-container">
         <NotificationAlert ref={notificationAlertRef} />
       </div>
-      {/* <h1 className="h1 text-white">Search company</h1> */}
+      {/* <h1 className="h1 text-white">Compare two companies</h1> */}
       <form onSubmit={(e) => onSubmitButtonClick(e)}>
         <FormGroup>
-          <Label for="search">Company Name</Label>
+          <Label for="Company A">Company A</Label>
           <Select
             styles={customStyles}
             className="react-select info"
             classNamePrefix="react-select"
-            value={search}
-            onChange={(value) => setSearch(value)}
+            value={searchCompanyA}
+            onChange={(value) => setSearchCompanyA(value)}
             options={searchOptions}
           />
         </FormGroup>
+
+        <FormGroup>
+          <Label for="Company B">Company B</Label>
+          <Select
+            styles={customStyles}
+            className="react-select info"
+            classNamePrefix="react-select"
+            value={searchCompanyB}
+            onChange={(value) => setSearchCompanyB(value)}
+            options={searchOptions}
+          />
+        </FormGroup>
+
         <div className="form-row">
           <FormGroup className="col-md-4">
             <Label for="fromYear">From Year</Label>
@@ -142,11 +174,11 @@ const SearchForm = () => {
           </FormGroup>
         </div>
         <Button type="submit" color="primary">
-          Search
+          Compare
         </Button>
       </form>
     </>
   );
 };
 
-export default SearchForm;
+export default CompareForm;
