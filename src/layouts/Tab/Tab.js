@@ -21,8 +21,13 @@ import { chartExample6, chartExample7 } from "variables/charts.js";
 import ChartCard from "components/Charts/ChartCard";
 import Footer from "components/Footer/Footer";
 import PrintBtn from "components/PrintBtn/PrintBtn";
+import NumberCard from "components/NumberCards/NumberCards";
+import { getCompanyByName } from "api/callbacks";
+import { getOverviewByTicker } from "api/callbacks";
 
 const TabLayout = () => {
+  const companyName = localStorage.getItem("companyName");
+  console.log("companyName", companyName);
   const [pageTabs, setpageTabs] = useState("1");
   const multipleSelectValues1 = [
     { value: "0", label: "No of Qualified Leads" },
@@ -40,14 +45,40 @@ const TabLayout = () => {
   const [multipleSelect1, setmultipleSelect1] = React.useState(
     multipleSelectValues1
   );
-  // const [multipleSelect2, setmultipleSelect2] = React.useState(null);
-  // const [multipleSelect3, setmultipleSelect3] = React.useState(null);
-  // const [multipleSelect4, setmultipleSelect4] = React.useState(null);
 
+  const numberCardValuesData = [
+    { value: "0", label: "ARR", byLine: "For the latest quarter" },
+    {
+      value: "1",
+      label: "NRR",
+      byLine: "For the latest quarter",
+    },
+    {
+      value: "2",
+      label: "Total customers",
+      byLine: "For the latest quarter",
+    },
+  ];
+
+  const [companyApiData, setCompanyApiData] = useState({});
+  const [overviewApiData, setOverviewApiData] = useState({});
+  // eslint-disable-next-line
+  const [numberCardValues, setNumberCardValues] =
+    React.useState(numberCardValuesData);
+  const [ticker, setTicker] = useState("");
   const refToConvertTab1 = React.createRef();
   const refToConvertTab2 = React.createRef();
-  const refToConvertTab3 = React.createRef();
-  const refToConvertTab4 = React.createRef();
+
+  React.useEffect(() => {
+    async function setValues() {
+      const companyResult = await getCompanyByName(companyName);
+      setCompanyApiData(companyResult);
+      setTicker(companyResult.ticker);
+      const overviewResult = await getOverviewByTicker(ticker);
+      setOverviewApiData(overviewResult);
+    }
+    setValues();
+  }, [companyName, ticker]);
 
   return (
     <>
@@ -58,13 +89,12 @@ const TabLayout = () => {
               <CardHeader>
                 <CardTitle className="text-center mt-5" tag="h1">
                   <h4 className="h1 text-white bold text-center">
-                    Company name
+                    {companyName}
                   </h4>
                 </CardTitle>
                 <br />
               </CardHeader>
               <CardBody>
-                {/* color-classes: "nav-pills-primary", "nav-pills-info", "nav-pills-success", "nav-pills-warning","nav-pills-danger" */}
                 <Nav
                   className="nav-pills-info nav-pills-icons justify-content-center"
                   pills
@@ -76,7 +106,7 @@ const TabLayout = () => {
                       onClick={() => setpageTabs("1")}
                     >
                       <i className="tim-icons icon-istanbul" />
-                      Acquisition
+                      Metrics
                     </NavLink>
                   </NavItem>
                   <NavItem>
@@ -86,27 +116,7 @@ const TabLayout = () => {
                       onClick={() => setpageTabs("2")}
                     >
                       <i className="tim-icons icon-bag-16" />
-                      Engagement &amp; Retention
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      data-toggle="tab"
-                      className={pageTabs === "3" ? "active" : ""}
-                      onClick={() => setpageTabs("3")}
-                    >
-                      <i className="tim-icons icon-coins" />
-                      Revenue &amp; Growth
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      data-toggle="tab"
-                      className={pageTabs === "4" ? "active" : ""}
-                      onClick={() => setpageTabs("4")}
-                    >
-                      <i className="tim-icons icon-settings" />
-                      Unit Economics
+                      Charts
                     </NavLink>
                   </NavItem>
                 </Nav>
@@ -116,7 +126,46 @@ const TabLayout = () => {
                 >
                   <TabPane tabId="1">
                     <div ref={refToConvertTab1}>
-                      <PrintBtn refToConvert={refToConvertTab1} />
+                      <div className="row">
+                        {/* <div className="flex bg-light mt-auto">{companyName}</div> */}
+                        <PrintBtn refToConvert={refToConvertTab1} />
+                      </div>
+                      <h4 className="h5 text-light">
+                        {overviewApiData.description}
+                      </h4>
+                      <Row>
+                        <Col>
+                          <NumberCard
+                            label={numberCardValues[0].label}
+                            mainValue={companyApiData.ARR}
+                            byLine={numberCardValues[0].byLine}
+                            sentiment="good"
+                            isVisible
+                          />
+                        </Col>
+                        <Col>
+                          <NumberCard
+                            label={numberCardValues[1].label}
+                            mainValue={companyApiData.NRR}
+                            byLine={numberCardValues[1].byLine}
+                            sentiment="bad"
+                            isVisible
+                          />
+                        </Col>
+                        <Col>
+                          <NumberCard
+                            label={numberCardValues[2].label}
+                            mainValue={companyApiData.Customers}
+                            byLine={numberCardValues[2].byLine}
+                            isVisible
+                          />
+                        </Col>
+                      </Row>
+                    </div>
+                  </TabPane>
+                  <TabPane tabId="2">
+                    <div ref={refToConvertTab2}>
+                      <PrintBtn refToConvert={refToConvertTab2} />
                       <h4 className="h4 text-center">
                         How efficient and predictible is your sales funnel?
                       </h4>
@@ -201,70 +250,6 @@ const TabLayout = () => {
                           )}
                         />
                       </Row>
-                    </div>
-                  </TabPane>
-                  <TabPane tabId="2">
-                    <div ref={refToConvertTab2}>
-                      <PrintBtn refToConvert={refToConvertTab2} />
-                      <h4 className="h4 text-center">
-                        How much do your customer love your platform?
-                      </h4>{" "}
-                      <br />
-                      <Row>
-                        <ChartCard
-                          type="line"
-                          label="No active users"
-                          mainValue="5000"
-                          chartObject={chartExample6}
-                          isVisible
-                        />
-                      </Row>
-                      <Row>
-                        <ChartCard
-                          type="bar"
-                          label="DAU/MAU Ratio"
-                          mainValue="5.12"
-                          chartObject={chartExample7}
-                          isVisible
-                        />
-                        <ChartCard
-                          type="line"
-                          label="Percentage penetration"
-                          mainValue="69"
-                          chartObject={chartExample6}
-                          isVisible
-                        />
-                      </Row>
-                      <Row>
-                        <ChartCard
-                          type="line"
-                          label="Net Promoter Score"
-                          mainValue="69"
-                          chartObject={chartExample6}
-                          isVisible
-                        />
-                      </Row>
-                    </div>
-                  </TabPane>
-                  <TabPane tabId="3">
-                    <div ref={refToConvertTab3}>
-                      <PrintBtn refToConvert={refToConvertTab3} />
-                      <h4 className="h4 text-center">
-                        How much are your customers are willing to pay?
-                      </h4>
-                      <br />
-                      TODO
-                    </div>
-                  </TabPane>
-                  <TabPane tabId="4">
-                    <div ref={refToConvertTab4}>
-                      <PrintBtn refToConvert={refToConvertTab4} />
-                      Completely synergize resource taxing relationships via
-                      premier niche markets. Professionally cultivate one-to-one
-                      customer service with robust ideas. <br />
-                      <br />
-                      Dynamically innovate resource-leveling customer service
-                      for state of the art customer service.
                     </div>
                   </TabPane>
                 </TabContent>

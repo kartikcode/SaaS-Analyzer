@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://digitalalpha.ml";
 
 const parseMetricParams = (cik, annual, from, to, metric) => {
   return {
@@ -46,10 +46,15 @@ const getCompanyMetrics = async (params) => {
   return response.data;
 };
 
+const getOverviewByTicker = async (ticker) => {
+  const response = await axios.post(`${BASE_URL}/overviewbyticker`, { ticker });
+  return response.data;
+};
 export {
   root,
   getCompanyByName,
   getCompanyByTicker,
   getCompanyByCik,
   getCompanyMetrics,
+  getOverviewByTicker,
 };
