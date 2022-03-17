@@ -16,10 +16,12 @@ import {
 } from "reactstrap";
 
 import Footer from "components/Footer/Footer";
+import PrintBtn from "components/PrintBtn/PrintBtn";
 
 const ExtractLayout = () => {
   const [pageTabs, setpageTabs] = useState("1");
   const [isOpen, setIsOpen] = useState(1);
+  // eslint-disable-next-line
   const [lists, setLists] = useState([
     {
       _id: 1,
@@ -32,7 +34,7 @@ const ExtractLayout = () => {
       answer: "Something else",
     },
     {
-      _id: 2,
+      _id: 3,
       question: "Some other cool question?",
       answer: "Something else",
     },
@@ -44,6 +46,8 @@ const ExtractLayout = () => {
       setIsOpen(id);
     }
   };
+
+  const refToConvertSummary = React.createRef();
   return (
     <>
       <div className="container full-width">
@@ -89,10 +93,6 @@ const ExtractLayout = () => {
                   activeTab={pageTabs}
                 >
                   <TabPane tabId="1">
-                    {/* <CardHeader>
-                      <CardTitle tag="h3">FAQs</CardTitle>
-                    </CardHeader> */}
-
                     <div
                       aria-multiselectable={true}
                       className="card-collapse"
@@ -114,12 +114,15 @@ const ExtractLayout = () => {
                     </div>
                   </TabPane>
                   <TabPane tabId="2">
-                    Completely synergize resource taxing relationships via
-                    premier niche markets. Professionally cultivate one-to-one
-                    customer service with robust ideas. <br />
-                    <br />
-                    Dynamically innovate resource-leveling customer service for
-                    state of the art customer service.
+                    <div ref={refToConvertSummary}>
+                      <PrintBtn refToConvert={refToConvertSummary} />
+                      Completely synergize resource taxing relationships via
+                      premier niche markets. Professionally cultivate one-to-one
+                      customer service with robust ideas. <br />
+                      <br />
+                      Dynamically innovate resource-leveling customer service
+                      for state of the art customer service.
+                    </div>
                   </TabPane>
                 </TabContent>
               </CardBody>

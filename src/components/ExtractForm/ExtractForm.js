@@ -101,7 +101,10 @@ const ExtractForm = () => {
           </FormGroup>
         </div>
         <Button type="submit" color="primary">
-          Extract
+          Extract Data
+        </Button>
+        <Button type="submit" color="warning">
+          Download Complete Form
         </Button>
       </form>
     </>

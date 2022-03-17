@@ -20,6 +20,7 @@ import { chartExample6, chartExample7 } from "variables/charts.js";
 
 import ChartCard from "components/Charts/ChartCard";
 import Footer from "components/Footer/Footer";
+import PrintBtn from "components/PrintBtn/PrintBtn";
 
 const TabLayout = () => {
   const [pageTabs, setpageTabs] = useState("1");
@@ -42,6 +43,11 @@ const TabLayout = () => {
   // const [multipleSelect2, setmultipleSelect2] = React.useState(null);
   // const [multipleSelect3, setmultipleSelect3] = React.useState(null);
   // const [multipleSelect4, setmultipleSelect4] = React.useState(null);
+
+  const refToConvertTab1 = React.createRef();
+  const refToConvertTab2 = React.createRef();
+  const refToConvertTab3 = React.createRef();
+  const refToConvertTab4 = React.createRef();
 
   return (
     <>
@@ -109,145 +115,157 @@ const TabLayout = () => {
                   activeTab={pageTabs}
                 >
                   <TabPane tabId="1">
-                    <h4 className="h4 text-center">
-                      How efficient and predictible is your sales funnel?
-                    </h4>
-                    <br />
-                    <Row>
-                      <Col md="4">
-                        <h4 className="h4 text-white">
-                          Select what to display:
-                        </h4>
-                      </Col>
-                      <Col lg="8" md="8" sm="3">
-                        <Select
-                          className="react-select info"
-                          classNamePrefix="react-select"
-                          placeholder="Choose metrics"
-                          name="multipleSelect"
-                          closeMenuOnSelect={false}
-                          isMulti
-                          value={multipleSelect1}
-                          onChange={(value) => {
-                            if (value == null) setmultipleSelect1([]);
-                            else setmultipleSelect1(value);
-                          }}
-                          options={multipleSelectValues1}
+                    <div ref={refToConvertTab1}>
+                      <PrintBtn refToConvert={refToConvertTab1} />
+                      <h4 className="h4 text-center">
+                        How efficient and predictible is your sales funnel?
+                      </h4>
+                      <br />
+                      <Row>
+                        <Col md="4">
+                          <h4 className="h4 text-white">
+                            Select what to display:
+                          </h4>
+                        </Col>
+                        <Col lg="8" md="8" sm="3">
+                          <Select
+                            className="react-select info"
+                            classNamePrefix="react-select"
+                            placeholder="Choose metrics"
+                            name="multipleSelect"
+                            closeMenuOnSelect={false}
+                            isMulti
+                            value={multipleSelect1}
+                            onChange={(value) => {
+                              if (value == null) setmultipleSelect1([]);
+                              else setmultipleSelect1(value);
+                            }}
+                            options={multipleSelectValues1}
+                          />
+                        </Col>
+                      </Row>
+                      <br />
+                      <Row>
+                        <ChartCard
+                          type="line"
+                          label={multipleSelectValues1[0].label}
+                          mainValue="7500"
+                          chartObject={chartExample6}
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[0].value
+                          )}
                         />
-                      </Col>
-                    </Row>
-                    <br />
-                    <Row>
-                      <ChartCard
-                        type="line"
-                        label={multipleSelectValues1[0].label}
-                        mainValue="7500"
-                        chartObject={chartExample6}
-                        isVisible={multipleSelect1.some(
-                          (selection) =>
-                            selection.value === multipleSelectValues1[0].value
-                        )}
-                      />
-                      <ChartCard
-                        type="line"
-                        label={multipleSelectValues1[1].label}
-                        mainValue="750000"
-                        chartObject={chartExample6}
-                        isVisible={multipleSelect1.some(
-                          (selection) =>
-                            selection.value === multipleSelectValues1[1].value
-                        )}
-                      />
-                    </Row>
-                    <Row>
-                      <ChartCard
-                        type="bar"
-                        label={multipleSelectValues1[2].label}
-                        mainValue="7500"
-                        isVisible={multipleSelect1.some(
-                          (selection) =>
-                            selection.value === multipleSelectValues1[2].value
-                        )}
-                        chartObject={chartExample7}
-                      />
-                    </Row>
-                    <Row>
-                      <ChartCard
-                        type="bar"
-                        label={multipleSelectValues1[3].label}
-                        mainValue="7500"
-                        chartObject={chartExample7}
-                        isVisible={multipleSelect1.some(
-                          (selection) =>
-                            selection.value === multipleSelectValues1[3].value
-                        )}
-                      />
-                      <ChartCard
-                        type="line"
-                        label={multipleSelectValues1[4].label}
-                        mainValue="96545"
-                        chartObject={chartExample6}
-                        isVisible={multipleSelect1.some(
-                          (selection) =>
-                            selection.value === multipleSelectValues1[4].value
-                        )}
-                      />
-                    </Row>
+                        <ChartCard
+                          type="line"
+                          label={multipleSelectValues1[1].label}
+                          mainValue="750000"
+                          chartObject={chartExample6}
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[1].value
+                          )}
+                        />
+                      </Row>
+                      <Row>
+                        <ChartCard
+                          type="bar"
+                          label={multipleSelectValues1[2].label}
+                          mainValue="7500"
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[2].value
+                          )}
+                          chartObject={chartExample7}
+                        />
+                      </Row>
+                      <Row>
+                        <ChartCard
+                          type="bar"
+                          label={multipleSelectValues1[3].label}
+                          mainValue="7500"
+                          chartObject={chartExample7}
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[3].value
+                          )}
+                        />
+                        <ChartCard
+                          type="line"
+                          label={multipleSelectValues1[4].label}
+                          mainValue="96545"
+                          chartObject={chartExample6}
+                          isVisible={multipleSelect1.some(
+                            (selection) =>
+                              selection.value === multipleSelectValues1[4].value
+                          )}
+                        />
+                      </Row>
+                    </div>
                   </TabPane>
                   <TabPane tabId="2">
-                    <h4 className="h4 text-center">
-                      How much do your customer love your platform?
-                    </h4>{" "}
-                    <br />
-                    <Row>
-                      <ChartCard
-                        type="line"
-                        label="No active users"
-                        mainValue="5000"
-                        chartObject={chartExample6}
-                        isVisible
-                      />
-                    </Row>
-                    <Row>
-                      <ChartCard
-                        type="bar"
-                        label="DAU/MAU Ratio"
-                        mainValue="5.12"
-                        chartObject={chartExample7}
-                        isVisible
-                      />
-                      <ChartCard
-                        type="line"
-                        label="Percentage penetration"
-                        mainValue="69"
-                        chartObject={chartExample6}
-                        isVisible
-                      />
-                    </Row>
-                    <Row>
-                      <ChartCard
-                        type="line"
-                        label="Net Promoter Score"
-                        mainValue="69"
-                        chartObject={chartExample6}
-                        isVisible
-                      />
-                    </Row>
+                    <div ref={refToConvertTab2}>
+                      <PrintBtn refToConvert={refToConvertTab2} />
+                      <h4 className="h4 text-center">
+                        How much do your customer love your platform?
+                      </h4>{" "}
+                      <br />
+                      <Row>
+                        <ChartCard
+                          type="line"
+                          label="No active users"
+                          mainValue="5000"
+                          chartObject={chartExample6}
+                          isVisible
+                        />
+                      </Row>
+                      <Row>
+                        <ChartCard
+                          type="bar"
+                          label="DAU/MAU Ratio"
+                          mainValue="5.12"
+                          chartObject={chartExample7}
+                          isVisible
+                        />
+                        <ChartCard
+                          type="line"
+                          label="Percentage penetration"
+                          mainValue="69"
+                          chartObject={chartExample6}
+                          isVisible
+                        />
+                      </Row>
+                      <Row>
+                        <ChartCard
+                          type="line"
+                          label="Net Promoter Score"
+                          mainValue="69"
+                          chartObject={chartExample6}
+                          isVisible
+                        />
+                      </Row>
+                    </div>
                   </TabPane>
                   <TabPane tabId="3">
-                    <h4 className="h4 text-center">
-                      How much are your customers are willing to pay?
-                    </h4>
-                    <br />
-                    TODO
+                    <div ref={refToConvertTab3}>
+                      <PrintBtn refToConvert={refToConvertTab3} />
+                      <h4 className="h4 text-center">
+                        How much are your customers are willing to pay?
+                      </h4>
+                      <br />
+                      TODO
+                    </div>
                   </TabPane>
                   <TabPane tabId="4">
-                    Completely synergize resource taxing relationships via
-                    premier niche markets. Professionally cultivate one-to-one
-                    customer service with robust ideas. <br />
-                    <br />
-                    Dynamically innovate resource-leveling customer service for
-                    state of the art customer service.
+                    <div ref={refToConvertTab4}>
+                      <PrintBtn refToConvert={refToConvertTab4} />
+                      Completely synergize resource taxing relationships via
+                      premier niche markets. Professionally cultivate one-to-one
+                      customer service with robust ideas. <br />
+                      <br />
+                      Dynamically innovate resource-leveling customer service
+                      for state of the art customer service.
+                    </div>
                   </TabPane>
                 </TabContent>
               </CardBody>
