@@ -74,6 +74,7 @@ const SearchForm = () => {
       fromQuater.value,
       toQuater.value
     );
+    localStorage.setItem("companyName", search.value);
     // redirect to /tab
     history.push("/tab");
   };

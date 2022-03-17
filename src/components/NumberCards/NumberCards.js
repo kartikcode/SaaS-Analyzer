@@ -1,19 +1,25 @@
 import React from "react";
 import { Row, Col, Card, CardBody, CardTitle, CardFooter } from "reactstrap";
 
-const NumberCard = ({ label, mainValue, byLine, isVisible }) => {
+const NumberCard = ({ label, mainValue, byLine, isVisible, sentiment }) => {
+  let borderColor = "border-dark";
   if (!isVisible) return <></>;
+  if (sentiment === "good") {
+    borderColor = "border-success";
+  } else if (sentiment === "bad") {
+    borderColor = "border-danger";
+  }
   return (
     <>
-      <Card className="card-stats">
+      <Card className={"card-stats border rounded " + borderColor}>
         <CardBody>
           <Row className="align-items-center">
-            <Col xs="7">
+            <Col xs="8">
               <div>
-                <p className="h4 text-white-50">{label}</p>
+                <p className="h5 text-white-50">{label}</p>
               </div>
             </Col>
-            <Col xs="5">
+            <Col xs="4">
               <div className="numbers">
                 <CardTitle tag="h3">{mainValue}</CardTitle>
               </div>
@@ -23,9 +29,7 @@ const NumberCard = ({ label, mainValue, byLine, isVisible }) => {
         <CardFooter>
           <hr />
           <div className="stats">
-            <i
-              className="tim-icons icon-bulb-63"
-            />
+            <i className="tim-icons icon-bulb-63" />
             {byLine}
           </div>
         </CardFooter>
