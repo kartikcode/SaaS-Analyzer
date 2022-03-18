@@ -27,9 +27,9 @@ const HomeLayout = () => {
       <div className="d-flex flex-column min-vh-100">
         <div className="container" style={{ paddingTop: 25 }}>
           <blockquote className="blockquote text-center">
-            <h1 className="mb-2">Inter-IIT Tech Meet 10.0</h1>
+          <h1 className="mb-2">SEFASSC</h1>
             <h3 className="mb-0">
-              Digital Alpha's SEC Filing Analyzer for SaaS Companies
+              SEC Filing Analyzer for SaaS Companies
             </h3>
             {/* <footer className="blockquote-footer">IIT Kanpur</footer> */}
           </blockquote>

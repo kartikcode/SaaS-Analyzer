@@ -10,16 +10,16 @@ const Footer = (props) => {
       <Container fluid={props.fluid ? true : false}>
         <ul className="nav">
           <li className="nav-item">
-            <a className="nav-link" href="https://iitk.ac.in/">
-              Something
+            <a className="nav-link" href="https://github.com/">
+              Documentation
             </a>
           </li>{" "}
           <li className="nav-item">
             <a
               className="nav-link"
-              href="https://iitk.ac.in/"
+              href="https://www.sec.gov/edgar/searchedgar/companysearch.html"
             >
-              About us
+              References
             </a>
           </li>
           

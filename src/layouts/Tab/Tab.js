@@ -5,11 +5,6 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
   Row,
   Col,
 } from "reactstrap";
@@ -28,7 +23,6 @@ import { getOverviewByTicker } from "api/callbacks";
 const TabLayout = () => {
   const companyName = localStorage.getItem("companyName");
   console.log("companyName", companyName);
-  const [pageTabs, setpageTabs] = useState("1");
   const multipleSelectValues1 = [
     { value: "0", label: "No of Qualified Leads" },
     {
@@ -47,10 +41,10 @@ const TabLayout = () => {
   );
 
   const numberCardValuesData = [
-    { value: "0", label: "ARR", byLine: "For the latest quarter" },
+    { value: "0", label: "Annual Recurring Revenue (ARR)", byLine: "For the latest quarter" },
     {
       value: "1",
-      label: "NRR",
+      label: "Net Revenue Retention Rate (NRR)",
       byLine: "For the latest quarter",
     },
     {
@@ -66,8 +60,8 @@ const TabLayout = () => {
   const [numberCardValues, setNumberCardValues] =
     React.useState(numberCardValuesData);
   const [ticker, setTicker] = useState("");
-  const refToConvertTab1 = React.createRef();
-  const refToConvertTab2 = React.createRef();
+  const refToConvertFull = React.createRef();
+  const refToConvertTab = React.createRef();
 
   React.useEffect(() => {
     async function setValues() {
@@ -82,6 +76,7 @@ const TabLayout = () => {
 
   return (
     <>
+      <div ref={refToConvertFull}>
       <div className="container full-width">
         <Row>
           <Col className="ml-auto mr-auto" md="12">
@@ -92,52 +87,21 @@ const TabLayout = () => {
                     {companyName}
                   </h4>
                 </CardTitle>
-                <br />
+                <div className="row">
+                        {/* <div className="flex bg-light mt-auto">{companyName}</div> */}
+                        <PrintBtn refToConvert={refToConvertFull} />
+                </div>
               </CardHeader>
               <CardBody>
-                <Nav
-                  className="nav-pills-info nav-pills-icons justify-content-center"
-                  pills
-                >
-                  <NavItem>
-                    <NavLink
-                      data-toggle="tab"
-                      className={pageTabs === "1" ? "active" : ""}
-                      onClick={() => setpageTabs("1")}
-                    >
-                      <i className="tim-icons icon-istanbul" />
-                      Metrics
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      data-toggle="tab"
-                      className={pageTabs === "2" ? "active" : ""}
-                      onClick={() => setpageTabs("2")}
-                    >
-                      <i className="tim-icons icon-bag-16" />
-                      Charts
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-                <TabContent
-                  className="tab-space tab-subcategories"
-                  activeTab={pageTabs}
-                >
-                  <TabPane tabId="1">
-                    <div ref={refToConvertTab1}>
-                      <div className="row">
-                        {/* <div className="flex bg-light mt-auto">{companyName}</div> */}
-                        <PrintBtn refToConvert={refToConvertTab1} />
-                      </div>
-                      <h4 className="h5 text-light">
+                    <div ref={refToConvertTab}>
+                      <h4 className="h5 text-light text-center">
                         {overviewApiData.description}
                       </h4>
                       <Row>
                         <Col>
                           <NumberCard
                             label={numberCardValues[0].label}
-                            mainValue={companyApiData.ARR}
+                            mainValue={(companyApiData.ARR)}
                             byLine={numberCardValues[0].byLine}
                             sentiment="good"
                             isVisible
@@ -161,14 +125,11 @@ const TabLayout = () => {
                           />
                         </Col>
                       </Row>
-                    </div>
-                  </TabPane>
-                  <TabPane tabId="2">
-                    <div ref={refToConvertTab2}>
-                      <PrintBtn refToConvert={refToConvertTab2} />
-                      <h4 className="h4 text-center">
+
+                    <div ref={refToConvertTab}>
+                      {/* <h4 className="h4 text-center">
                         How efficient and predictible is your sales funnel?
-                      </h4>
+                      </h4> */}
                       <br />
                       <Row>
                         <Col md="4">
@@ -251,12 +212,12 @@ const TabLayout = () => {
                         />
                       </Row>
                     </div>
-                  </TabPane>
-                </TabContent>
+                    </div>
               </CardBody>
             </Card>
           </Col>
         </Row>
+      </div>
       </div>
       <Footer fluid />
     </>
