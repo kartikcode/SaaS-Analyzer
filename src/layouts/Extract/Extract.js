@@ -17,28 +17,14 @@ import {
 
 import Footer from "components/Footer/Footer";
 import PrintBtn from "components/PrintBtn/PrintBtn";
+import { getCompanyByName } from "api/callbacks";
+import { getQnaByTicker } from "api/callbacks";
 
 const ExtractLayout = () => {
   const [pageTabs, setpageTabs] = useState("1");
   const [isOpen, setIsOpen] = useState(1);
-  // eslint-disable-next-line
-  const [lists, setLists] = useState([
-    {
-      _id: 1,
-      question: "What is the name of the company?",
-      answer: "Something",
-    },
-    {
-      _id: 2,
-      question: "What is the name of the project?",
-      answer: "Something else",
-    },
-    {
-      _id: 3,
-      question: "Some other cool question?",
-      answer: "Something else",
-    },
-  ]);
+  const [lists, setLists] = useState([]);
+  const [summary, setSummary] = useState("");
   const handleToggle = (id) => {
     if (isOpen === id) {
       setIsOpen(null);
@@ -47,6 +33,17 @@ const ExtractLayout = () => {
     }
   };
 
+  const companyName = localStorage.getItem("ExtractionSearchCompany");
+  React.useEffect(() => {
+    async function setValues() {
+      const companyResult = await getCompanyByName(companyName);
+      const qnadata = await getQnaByTicker(companyResult.ticker);
+      setLists(qnadata.qna);
+      setSummary(qnadata.summary);
+    }
+      
+    setValues();
+  }, [companyName]);
   const refToConvertSummary = React.createRef();
   return (
     <>
@@ -57,7 +54,7 @@ const ExtractLayout = () => {
               <CardHeader>
                 <CardTitle className="text-center mt-5" tag="h1">
                   <h4 className="h1 text-white bold text-center">
-                    Company name
+                    {companyName}
                   </h4>
                 </CardTitle>
                 <br />
@@ -100,11 +97,11 @@ const ExtractLayout = () => {
                       role="tablist"
                     >
                       {lists.map((list) => (
-                        <Card key={list._id}>
-                          <CardHeader onClick={() => handleToggle(list._id)}>
+                        <Card key={lists.indexOf(list)}>
+                          <CardHeader onClick={() => handleToggle(lists.indexOf(list))}>
                             <h4>{list.question}</h4>
                           </CardHeader>
-                          <Collapse isOpen={isOpen === list._id}>
+                          <Collapse isOpen={isOpen === lists.indexOf(list)}>
                             <CardBody>
                               <p>{list.answer}</p>
                             </CardBody>
@@ -116,12 +113,7 @@ const ExtractLayout = () => {
                   <TabPane tabId="2">
                     <div ref={refToConvertSummary}>
                       <PrintBtn refToConvert={refToConvertSummary} />
-                      Completely synergize resource taxing relationships via
-                      premier niche markets. Professionally cultivate one-to-one
-                      customer service with robust ideas. <br />
-                      <br />
-                      Dynamically innovate resource-leveling customer service
-                      for state of the art customer service.
+                      {summary}
                     </div>
                   </TabPane>
                 </TabContent>
