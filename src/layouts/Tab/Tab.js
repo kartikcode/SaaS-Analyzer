@@ -12,7 +12,11 @@ import {
   NavLink,
   TabContent,
   TabPane,
+  Button,
+  FormGroup,
 } from "reactstrap";
+
+import ReactDatetime from "react-datetime";
 
 import Select from "react-select";
 
@@ -158,11 +162,9 @@ const TabLayout = () => {
 
   const [companyApiData, setCompanyApiData] = useState({});
   const [overviewApiData, setOverviewApiData] = useState({});
-  // eslint-disable-next-line
   const [numberCardValues, setNumberCardValues] =
     React.useState(numberCardValuesData);
   const [ticker, setTicker] = useState("");
-  const [datetoindex, setDatetoindex] = useState({});
   const [timeSeriesApiData, setTimeSeriesApiData] = useState({
     quarTS: [],
     arrTS: [1, 2],
@@ -175,20 +177,28 @@ const TabLayout = () => {
   const [showTimeSeries, setShowTimeSeries] = useState(false);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(100);
+  const [fromFillingDate, setFromFillingDate] = useState("");
+  const [toFillingDate, setToFillingDate] = useState("");
   const refToConvertFull = React.createRef();
   const refToConvertTab = React.createRef();
 
-  React.useEffect(() => {
-    async function parseMap(quaterTS) {
-      try {
-        let tdatetoindex = {};
-        quaterTS.forEach((item, i) => {
-          tdatetoindex[item] = i;
-        });
-        setDatetoindex(tdatetoindex);
-      } catch {}
-    }
+  const filterDatapoints = (from, to) => {
+    const fillingdates = timeSeriesApiData.quarTS;
+    let startbool = false;
+    let endbool = false;
+    fillingdates.forEach((date, i) => {
+      if (startbool && Date(date) > Date(to)) {
+        setEnd(i);
+        endbool = true;
+      } else if (!startbool && Date(date) < Date(from)) {
+        startbool = true;
+        setStart(i);
+      }
+    });
+    if (!(endbool && startbool)) alert("No Filling in this period");
+  };
 
+  React.useEffect(() => {
     async function setValues() {
       const companyResult = await getCompanyByName(companyName);
       setCompanyApiData(companyResult);
@@ -196,8 +206,6 @@ const TabLayout = () => {
       const overviewResult = await getOverviewByTicker(ticker);
       setOverviewApiData(overviewResult);
       const timeSeriesData = await getTimeSeriesByTicker(ticker);
-      parseMap(timeSeriesData.quarTS);
-      console.log("timeSeriesData", timeSeriesData);
       setTimeSeriesApiData(timeSeriesData);
     }
     setValues();
@@ -242,6 +250,46 @@ const TabLayout = () => {
   const metricsPane = (
     <div ref={refToConvertTab}>
       <br />
+      <Row className="text-center">
+        <Col md="4">
+          <FormGroup>
+            <ReactDatetime
+              inputProps={{
+                className: "form-control",
+                placeholder: "From Date",
+              }}
+              timeFormat={false}
+              onChange={(value) => setFromFillingDate(value)}
+            />
+          </FormGroup>
+        </Col>
+        <Col md="4">
+          <FormGroup>
+            <ReactDatetime
+              inputProps={{
+                className: "form-control",
+                placeholder: "To Date",
+              }}
+              timeFormat={false}
+              onChange={(value) => setToFillingDate(value)}
+            />
+          </FormGroup>
+        </Col>
+        <Col md="4">
+          <FormGroup>
+            <Button
+              color="primary"
+              onClick={() => {
+                if (toFillingDate > fromFillingDate)
+                  filterDatapoints(fromFillingDate, toFillingDate);
+                else alert("Invalid dates");
+              }}
+            >
+              Filter by Filling Date
+            </Button>
+          </FormGroup>
+        </Col>
+      </Row>
       <Row>
         <Col md="4">
           <h4 className="h4 text-white">Select what to display:</h4>
