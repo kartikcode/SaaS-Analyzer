@@ -57,6 +57,7 @@ const ExtractForm = () => {
     }
 
     console.log(searchCompany.value, formType.value, year.value);
+    localStorage.setItem("ExtractionSearchCompany", searchCompany.value);
     history.push("/extract");
   };
   return (
