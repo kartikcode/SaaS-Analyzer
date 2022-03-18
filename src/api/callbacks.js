@@ -50,6 +50,12 @@ const getOverviewByTicker = async (ticker) => {
   const response = await axios.post(`${BASE_URL}/overviewbyticker`, { ticker });
   return response.data;
 };
+
+const getTimeSeriesByTicker = async (ticker) => {
+  const response = await axios.post(`${BASE_URL}/tsbyticker`, { ticker });
+  return response.data;
+};
+
 export {
   root,
   getCompanyByName,
@@ -57,4 +63,5 @@ export {
   getCompanyByCik,
   getCompanyMetrics,
   getOverviewByTicker,
+  getTimeSeriesByTicker,
 };
