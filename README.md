@@ -1,6 +1,7 @@
 # SaaS-Analyzer - SEC Filing Analyzer for SaaS Companies
 ## Requirements
-SaaS-Analyzer is built on React JS, Bootstrap 4, Reacstrap and the backend is built on Flask. Node JS is required to run the app.
+SaaS-Analyzer is built on React JS, Bootstrap 4, Reacstrap and the backend is built on Flask. Node JS is required to run the app.<br>
+The web app is hosted at https://digitalalpha.ml/
 
 ## Installation
 To get the project up and running, and view it in the browser, complete the following steps:
