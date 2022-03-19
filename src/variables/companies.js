@@ -291,3 +291,29 @@ export const searchOptions = [
     { value: 'ZSCALER INC', label: 'ZSCALER INC' },
     { value: 'ZUORA INC', label: 'ZUORA INC' }
 ]
+
+export const timeseriesChartLabels = [
+  { value: "ARR", label: "Annual Recurring Revenue (ARR)" },
+  { value: "NRR", label: "Net Revenue Retention Rate (NRR)" },
+  { value: "TCUS", label: "Total customers" },
+  { value: "SME", label: "Sales and marketing expense" },
+  { value: "TEMP", label: "Total Employee" },
+];
+
+export const overviewDataLabels = [
+    {
+      value: "0",
+      label: "Annual Recurring Revenue (ARR)",
+      byLine: "For the latest quarter",
+    },
+    {
+      value: "1",
+      label: "Net Revenue Retention Rate (NRR)",
+      byLine: "For the latest quarter",
+    },
+    {
+      value: "2",
+      label: "Total customers",
+      byLine: "For the latest quarter",
+    },
+  ];

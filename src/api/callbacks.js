@@ -2,16 +2,6 @@ const axios = require("axios");
 
 const BASE_URL = "https://digitalalpha.ml";
 
-const parseMetricParams = (cik, annual, from, to, metric) => {
-  return {
-    cik: cik, // <cik of the company>,
-    timeperiod: annual ? "annual" : "quaterly", // <annual (10-K forms)/quaterly (10-Q forms)>,
-    from_date: from, // <YYYY-MM-DD>,
-    to_date: to, // <YYYY-MM-DD>,
-    metric: metric, // ["churn rate", "revenue retention", "LTV to CAC ratio", "Customer Engagement Score", "Recurring Revenue", "SAAS Quick Ratio", "SAAS Magic Number"]
-  };
-};
-
 const root = async () => {
   const response = await axios.get(`${BASE_URL}`);
   return response.data;
@@ -32,20 +22,6 @@ const getCompanyByCik = async (cik) => {
   return response.data;
 };
 
-const getCompanyMetrics = async (params) => {
-  const response = await axios.post(
-    `${BASE_URL}/extract`,
-    parseMetricParams(
-      params.cik,
-      params.annual,
-      params.from,
-      params.to,
-      params.metric
-    )
-  );
-  return response.data;
-};
-
 const getOverviewByTicker = async (ticker) => {
   const response = await axios.post(`${BASE_URL}/overviewbyticker`, { ticker });
   return response.data;
@@ -60,13 +36,25 @@ const getQnaByTicker = async (ticker) => {
   const response = await axios.post(`${BASE_URL}/qnabyticker`, { ticker });
   return response.data;
 };
+
+const getSentimentByTicker = async (ticker) => {
+  const response = await axios.post(`${BASE_URL}/sentibyticker`, { ticker });
+  return response.data;
+};
+
+const getTwitByTicker = async (ticker) => {
+  const response = await axios.post(`${BASE_URL}/twitbyticker`, { ticker });
+  return response.data;
+};
+
 export {
   root,
   getCompanyByName,
   getCompanyByTicker,
   getCompanyByCik,
-  getCompanyMetrics,
   getOverviewByTicker,
   getTimeSeriesByTicker,
-  getQnaByTicker
+  getQnaByTicker,
+  getSentimentByTicker,
+  getTwitByTicker,
 };
