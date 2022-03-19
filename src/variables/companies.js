@@ -296,8 +296,9 @@ export const timeseriesChartLabels = [
   { value: "ARR", label: "Annual Recurring Revenue (ARR)" },
   { value: "NRR", label: "Net Revenue Retention Rate (NRR)" },
   { value: "TCUS", label: "Total customers" },
-  { value: "SME", label: "Sales and marketing expense" },
-  { value: "TEMP", label: "Total Employee" },
+  { value: "PP", label: "Payback Period (Months)" },
+  { value: "ICAC", label: "Implied CAC" },
+  { value: "ILTV", label: "Implied LTV" },
 ];
 
 export const overviewDataLabels = [

@@ -14,25 +14,27 @@ const NumberCard = ({ label, mainValue, byLine, isVisible, sentiment }) => {
       <Card className={"card-stats border rounded " + borderColor}>
         <CardBody>
           <Row className="align-items-center">
-            <Col xs="8">
+            <Col xs="6">
               <div>
                 <p className="h5 text-white-50">{label}</p>
               </div>
             </Col>
-            <Col xs="4">
+            <Col xs="6">
               <div className="numbers">
                 <CardTitle tag="h3">{mainValue}</CardTitle>
               </div>
             </Col>
           </Row>
         </CardBody>
-        <CardFooter>
-          <hr />
-          <div className="stats">
-            <i className="tim-icons icon-bulb-63" />
-            {byLine}
-          </div>
-        </CardFooter>
+        {byLine !== "" && (
+          <CardFooter>
+            <hr />
+            <div className="stats">
+              <i className="tim-icons icon-bulb-63" />
+              {byLine}
+            </div>
+          </CardFooter>
+        )}
       </Card>
     </>
   );
