@@ -203,7 +203,7 @@ const RTL = (props) => {
         />
         <Switch>
           {getRoutes(routes)}
-          <Redirect from="*" to="/admin/dashboard" />
+          <Redirect from="*" to="/saas/dashboard" />
         </Switch>
         {
           // we don't want the Footer to be rendered on full screen maps page
