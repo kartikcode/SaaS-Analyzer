@@ -83,7 +83,7 @@ const Admin = (props) => {
       if (prop.collapse) {
         return getRoutes(prop.views);
       }
-      if (prop.layout === "/admin") {
+      if (prop.layout === "/saas") {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -180,7 +180,7 @@ const Admin = (props) => {
         />
         <Switch>
           {getRoutes(routes)}
-          <Redirect from="*" to="/admin/search" />
+          <Redirect from="*" to="/saas/search" />
         </Switch>
         {
           // we don't want the Footer to be rendered on full screen maps page

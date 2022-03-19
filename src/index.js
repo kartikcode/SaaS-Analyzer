@@ -34,13 +34,14 @@ import ExtractLayout from "layouts/Extract/Extract";
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
-      <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
-      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-      <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
-      <Route path="/tab" render={(props) => <TabLayout {...props} />} />
-      <Route path="/compare" render={(props) => <CompareLayout {...props} />} />
-      <Route path="/extract" render={(props) => <ExtractLayout {...props} />} />
-      <Route path="/" render={(props) => <HomeLayout {...props} />} />
+      {/* <Route path="/auth" render={(props) => <AuthLayout {...props} />} /> */}
+      <Route path="/saas" render={(props) => <AdminLayout {...props} />} />
+      <Route path="/" render={(props) => <AdminLayout {...props} />} />
+      {/* <Route path="/rtl" render={(props) => <RTLLayout {...props} />} /> */}
+      {/* <Route path="/tab" render={(props) => <TabLayout {...props} />} /> */}
+      {/* <Route path="/compare" render={(props) => <CompareLayout {...props} />} /> */}
+      {/* <Route path="/extract" render={(props) => <ExtractLayout {...props} />} /> */}
+      {/* <Route path="/" render={(props) => <HomeLayout {...props} />} /> */}
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")

@@ -69,7 +69,7 @@ const AuthNavbar = (props) => {
         <Collapse isOpen={collapseOpen} navbar>
           <Nav navbar className="ml-auto">
             <NavItem>
-              <NavLink to="/admin/dashboard" className="nav-link text-primary">
+              <NavLink to="/saas/dashboard" className="nav-link text-primary">
                 <i className="tim-icons icon-minimal-left" /> Back to Dashboard
               </NavLink>
             </NavItem>

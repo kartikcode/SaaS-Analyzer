@@ -50,28 +50,28 @@ const routes = [
     key: +new Date(),
     icon: "tim-icons icon-zoom-split",
     component: Dashboard,
-    layout: "/admin",
+    layout: "/saas",
   },
   {
     path: "/compare",
     name: "Compare",
     icon: "tim-icons icon-settings",
     component: Widgets,
-    layout: "/admin",
+    layout: "/saas",
   },
   {
     path: "/extract",
     name: "Extract",
     icon: "tim-icons icon-chart-bar-32",
     component: Extract,
-    layout: "/admin",
+    layout: "/saas",
   },
   {
     path: "/Documentation",
     name: "Documentaion",
     icon: "tim-icons icon-time-alarm",
     component: Calendar,
-    layout: "/admin",
+    layout: "/saas",
   },
 ];
 
