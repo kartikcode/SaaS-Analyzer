@@ -341,6 +341,46 @@ const Dashboard = () => {
           />
         </Col>
       </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label="Magic Number"
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiData?.mg) * 100000) / 100
+            }
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label="Payback period (months)"
+            mainValue={parseFloat(parseInt(timeSeriesApiData?.pbTSlast)) / 100}
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label="CAC Ratio"
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiData?.cac) * 100000) / 100
+            }
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label="LTV:CAC Ratio"
+            mainValue={timeSeriesApiData?.ltvcac}
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+      </Row>
       {Boolean(sentimentApiData) && (
         <Row>
           <Col>
@@ -404,6 +444,20 @@ const Dashboard = () => {
           </CardBody>
         </Row>
       </Card>
+      <Row>
+        <Col>
+          <NumberCard label="EPS" mainValue={overviewApiData?.eps} byLine="" isVisible />
+        </Col>
+        <Col>
+          <NumberCard label="Profit Margin" mainValue={overviewApiData?.profitmargin} byLine="" isVisible />
+        </Col>
+        <Col>
+          <NumberCard label="Operating margin" mainValue={overviewApiData?.operatingmarginttm} byLine="" isVisible />
+        </Col>
+        <Col>
+          <NumberCard label="P/E" mainValue={overviewApiData?.pe} byLine="" isVisible />
+        </Col>
+      </Row>
     </div>
   );
 
