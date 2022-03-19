@@ -41,10 +41,10 @@ The portal shows 4 sections, namely:
 - Highlights
 - Filings Explorer
 
-![](pics/Screenshot%20(95).png)
-![](pics/Screenshot%20(88).png)
-![](pics/Screenshot%20(89).png)
-![](pics/Screenshot%20(90).png)
-![](pics/Screenshot%20(91).png)
-![](pics/Screenshot%20(92).png)
-![](pics/Screenshot%20(94).png)
+![](src/assets/pics/Screenshot%20(95).png)
+![](src/assets/pics/Screenshot%20(88).png)
+![](src/assets/pics/Screenshot%20(89).png)
+![](src/assets/pics/Screenshot%20(90).png)
+![](src/assets/pics/Screenshot%20(91).png)
+![](src/assets/pics/Screenshot%20(92).png)
+![](src/assets/pics/Screenshot%20(94).png)
