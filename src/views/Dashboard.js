@@ -1,19 +1,4 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import LoadingOverlay from "react-loading-overlay";
 
@@ -39,7 +24,6 @@ import ChartCard from "components/Charts/ChartCard";
 import NumberCard from "components/NumberCards/NumberCards";
 import NotificationAlert from "react-notification-alert";
 import PrintBtn from "components/PrintBtn/PrintBtn";
-import TagsInput from "components/TagsInput/TagsInput.js";
 import Select from "react-select";
 import ReactDatetime from "react-datetime";
 import {
@@ -53,6 +37,7 @@ import {
   getTimeSeriesByTicker,
   getSentimentByTicker,
   getTwitByTicker,
+  getSectionByTicker,
   getQnaByTicker,
 } from "api/callbacks.js";
 
@@ -167,7 +152,7 @@ const Dashboard = () => {
     label: "",
   });
 
-  const [isOpen, setIsOpen] = useState(1);
+  const [isOpen, setIsOpen] = useState(null);
   const [lists, setLists] = useState([]);
   const [summary, setSummary] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -182,7 +167,7 @@ const Dashboard = () => {
     finbSenti: {},
     dictSenti: {},
   });
-  const [openedCollapseOne, setOpenedCollapseOne] = useState(false);
+  const [openedCollapseOne, setOpenedCollapseOne] = useState(null);
   const [ticker, setTicker] = useState("");
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(100);
@@ -190,7 +175,7 @@ const Dashboard = () => {
   const [toFillingDate, setToFillingDate] = useState("");
   const [multipleSelect, setMultipleSelect] = useState(timeseriesChartLabels);
   const [tagsinput, setTagsinput] = useState(["twitter", "trends"]);
-  const [sentimentElement, setSentimentElement] = useState(<></>);
+  const [secApiData, setSecApiData] = useState({});
   const [timeSeriesApiData, setTimeSeriesApiData] = useState({
     quarTS: [1],
     arrTS: [1],
@@ -222,6 +207,10 @@ const Dashboard = () => {
     const timeSeriesData = await getTimeSeriesByTicker(ticker);
     setTimeSeriesApiData(timeSeriesData);
   };
+  const setSecData = async () => {
+    const secData = await getSectionByTicker(ticker);
+    setSecApiData(secData?.sectionwise);
+  };
 
   const setSentimentData = async () => {
     const sentimentData = await getSentimentByTicker(ticker);
@@ -251,6 +240,7 @@ const Dashboard = () => {
       setSentimentData();
       settwitterdata();
       setqnadata();
+      setSecData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker]);
@@ -269,6 +259,7 @@ const Dashboard = () => {
       setTimeSeriesData();
       setSentimentData();
       settwitterdata();
+      setSecData();
     }
     setIsLoading(true);
     if (companyName.value.length === 0) {
@@ -282,10 +273,6 @@ const Dashboard = () => {
     await setValues();
     setIsLoading(false);
     setIsFetched(true);
-  };
-
-  const handleTagsinput = (tagsinput) => {
-    setTagsinput(tagsinput);
   };
 
   const filterDatapoints = (from, to) => {
@@ -688,9 +675,11 @@ const Dashboard = () => {
             options={timeseriesChartLabels}
           />
         </Col>
-        <Row>
-          <div></div>
-        </Row>
+      </Row>
+      <Row>
+        <div></div>
+      </Row>
+      <Row>
         <Col>
           <ChartCard
             type="line"
@@ -707,6 +696,8 @@ const Dashboard = () => {
             )}
           />
         </Col>
+      </Row>
+      <Row>
         <Col>
           <ChartCard
             type="line"
@@ -723,6 +714,8 @@ const Dashboard = () => {
             )}
           />
         </Col>
+      </Row>
+      <Row>
         <Col>
           <ChartCard
             type="line"
@@ -739,6 +732,8 @@ const Dashboard = () => {
             )}
           />
         </Col>
+      </Row>
+      <Row>
         <Col>
           <ChartCard
             type="line"
@@ -755,6 +750,8 @@ const Dashboard = () => {
             )}
           />
         </Col>
+      </Row>
+      <Row>
         <Col>
           <ChartCard
             type="line"
@@ -771,6 +768,9 @@ const Dashboard = () => {
             )}
           />
         </Col>
+      </Row>
+
+      <Row>
         <Col>
           <ChartCard
             type="line"
@@ -787,6 +787,8 @@ const Dashboard = () => {
             )}
           />
         </Col>
+      </Row>
+      <Row>
         <Col>
           <Card className="col">
             <CardHeader>
@@ -965,7 +967,517 @@ const Dashboard = () => {
                     <TabPane tabId={4}>
                       <div ref={refToConvertSummary}>
                         <PrintBtn refToConvert={refToConvertSummary} />
-                        {summary}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Summary</CardTitle>
+                          </CardHeader>
+                          <CardBody>{summary}</CardBody>
+                        </Card>
+                        <Row>
+                          <Col>
+                            <Card className="col">
+                              <CardHeader>
+                                <h5 className="card-category">
+                                  Skim through several sections of Filling
+                                </h5>
+                                <CardTitle tag="h3">
+                                  Section Wise Viewer
+                                </CardTitle>
+                              </CardHeader>
+                              <div
+                                aria-multiselectable={true}
+                                className="card-collapse"
+                                id="accordion"
+                                role="tablist"
+                              >
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 1}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(1);
+                                      }}
+                                    >
+                                      Item 1
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 1}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i1 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 11}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(11);
+                                      }}
+                                    >
+                                      Item 1A
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 11}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i1a || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 12}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(12);
+                                      }}
+                                    >
+                                      Item 1B
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 12}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i1b || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 2}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(2);
+                                      }}
+                                    >
+                                      Item 2
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 2}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i2 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 3}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(3);
+                                      }}
+                                    >
+                                      Item 3
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 3}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i3 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 4}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(4);
+                                      }}
+                                    >
+                                      Item 4
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 4}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i4 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 5}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(5);
+                                      }}
+                                    >
+                                      Item 5
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 5}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i5 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 6}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(6);
+                                      }}
+                                    >
+                                      Item 6
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 6}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i6 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 7}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(7);
+                                      }}
+                                    >
+                                      Item 7
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 7}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i7 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 71}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(71);
+                                      }}
+                                    >
+                                      Item 7A
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 71}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i7a || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 8}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(8);
+                                      }}
+                                    >
+                                      Item 8
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 8}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i8 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 9}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(9);
+                                      }}
+                                    >
+                                      Item 9
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 9}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i9 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 91}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(91);
+                                      }}
+                                    >
+                                      Item 9A
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 91}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i9a || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 92}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(92);
+                                      }}
+                                    >
+                                      Item 9B
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 92}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i9b || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 93}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(93);
+                                      }}
+                                    >
+                                      Item 9C
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 93}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i9c || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 10}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(10);
+                                      }}
+                                    >
+                                      Item 10
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 10}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i10 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 110}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(110);
+                                      }}
+                                    >
+                                      Item 11
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 110}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i11 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 12}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(12);
+                                      }}
+                                    >
+                                      Item 12
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 12}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i12 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 13}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(13);
+                                      }}
+                                    >
+                                      Item 13
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 13}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i13 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 14}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(14);
+                                      }}
+                                    >
+                                      Item 14
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 14}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i14 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 15}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(15);
+                                      }}
+                                    >
+                                      Item 15
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 15}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i15 || "--"}
+                                  </Collapse>
+                                </Card>
+                                <Card className="">
+                                  <CardHeader role="tab">
+                                    <a
+                                      aria-expanded={openedCollapseOne === 16}
+                                      data-parent="#accordion"
+                                      data-toggle="collapse"
+                                      onClick={() => {
+                                        setOpenedCollapseOne(16);
+                                      }}
+                                    >
+                                      Item 16
+                                      <i className="tim-icons icon-minimal-down" />
+                                    </a>
+                                  </CardHeader>
+                                  <Collapse
+                                    role="tabpanel"
+                                    isOpen={openedCollapseOne === 16}
+                                    className="text-muted"
+                                  >
+                                    {secApiData?.i16 || "--"}
+                                  </Collapse>
+                                </Card>
+                              </div>
+                            </Card>
+                          </Col>
+                        </Row>
                       </div>
                     </TabPane>
                   </TabContent>
