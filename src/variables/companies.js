@@ -295,7 +295,7 @@ export const timeseriesChartLabels = [
 export const overviewDataLabels = [
     {
       value: "0",
-      label: "Annual Recurring Revenue (ARR)",
+      label: "Annual Recurring Revenue (ARR) ($M)",
       byLine: "For the latest quarter",
     },
     {

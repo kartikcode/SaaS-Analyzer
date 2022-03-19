@@ -8,6 +8,8 @@ const NumberCard = ({ label, mainValue, byLine, isVisible, sentiment }) => {
     borderColor = "border-success";
   } else if (sentiment === "bad") {
     borderColor = "border-danger";
+  } else if (sentiment === "neutral") {
+    borderColor = "border-warning";
   }
   return (
     <>

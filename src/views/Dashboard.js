@@ -327,7 +327,6 @@ const Dashboard = () => {
             label={overviewDataLabels[0].label}
             mainValue={companyApiData.ARR}
             byLine={overviewDataLabels[0].byLine}
-            sentiment="good"
             isVisible
           />
         </Col>
@@ -336,7 +335,13 @@ const Dashboard = () => {
             label={overviewDataLabels[1].label}
             mainValue={companyApiData.NRR}
             byLine={overviewDataLabels[1].byLine}
-            sentiment="bad"
+            sentiment={
+              parseFloat(companyApiData?.NRR) > 90
+                ? "good"
+                : parseFloat(companyApiData?.NRR) > 70
+                ? "neutral"
+                : "bad"
+            }
             isVisible
           />
         </Col>
@@ -353,19 +358,27 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="Magic Number"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiData?.mg) * 100000) / 100
-            }
+            mainValue={timeSeriesApiData?.mg}
             byLine="For the latest quarter"
             isVisible
+            sentiment={
+              parseFloat(timeSeriesApiData?.mg) > 0.75
+                ? "good"
+                : parseFloat(timeSeriesApiData?.mg) > 0.5
+                ? "neutral"
+                : "bad"
+            }
           />
         </Col>
         <Col>
           <NumberCard
             label="Payback period (months)"
-            mainValue={parseFloat(parseInt(timeSeriesApiData?.pbTSlast)) / 100}
+            mainValue={timeSeriesApiData?.pbTSlast}
             byLine="For the latest quarter"
             isVisible
+            sentiment={
+              parseInt(timeSeriesApiData?.pbTSlast) < 12 ? "good" : "bad"
+            }
           />
         </Col>
       </Row>
@@ -373,9 +386,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="CAC Ratio"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiData?.cac) * 100000) / 100
-            }
+            mainValue={timeSeriesApiData?.cac}
             byLine="For the latest quarter"
             isVisible
           />
@@ -383,11 +394,16 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="LTV:CAC Ratio"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiData?.ltvcac) * 100000) / 100
-            }
+            mainValue={timeSeriesApiData?.ltvcac}
             byLine="For the latest quarter"
             isVisible
+            sentiment={
+              parseFloat(timeSeriesApiData?.ltvcac) > 3
+                ? "good"
+                : parseFloat(timeSeriesApiData?.ltvcac) > 1
+                ? "neutral"
+                : "bad"
+            }
           />
         </Col>
       </Row>
@@ -576,7 +592,7 @@ const Dashboard = () => {
       <Row>
         <Col>
           <NumberCard
-            label="EPS"
+            label="EPS ($)"
             mainValue={overviewApiData?.eps}
             byLine=""
             isVisible
@@ -585,7 +601,9 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="Profit Margin"
-            mainValue={overviewApiData?.profitmargin}
+            mainValue={
+              parseInt(overviewApiData?.profitmargin * 10000) / 100 + "%"
+            }
             byLine=""
             isVisible
           />
@@ -593,7 +611,9 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="Operating margin"
-            mainValue={overviewApiData?.operatingmarginttm}
+            mainValue={
+              parseInt(overviewApiData?.operatingmarginttm * 10000) / 100 + "%"
+            }
             byLine=""
             isVisible
           />
@@ -948,20 +968,26 @@ const Dashboard = () => {
                         id="accordion"
                         role="tablist"
                       >
-                        {lists.map((list) => (
-                          <Card key={lists.indexOf(list)}>
-                            <CardHeader
-                              onClick={() => handleToggle(lists.indexOf(list))}
-                            >
-                              <h4>{list.question}</h4>
-                            </CardHeader>
-                            <Collapse isOpen={isOpen === lists.indexOf(list)}>
-                              <CardBody>
-                                <p>{list.answer}</p>
-                              </CardBody>
-                            </Collapse>
-                          </Card>
-                        ))}
+                        {lists.length === 0
+                          ? "No Data Available"
+                          : lists.map((list) => (
+                              <Card key={lists.indexOf(list)}>
+                                <CardHeader
+                                  onClick={() =>
+                                    handleToggle(lists.indexOf(list))
+                                  }
+                                >
+                                  <h4>{list.question}</h4>
+                                </CardHeader>
+                                <Collapse
+                                  isOpen={isOpen === lists.indexOf(list)}
+                                >
+                                  <CardBody>
+                                    <p>{list.answer}</p>
+                                  </CardBody>
+                                </Collapse>
+                              </Card>
+                            ))}
                       </div>
                     </TabPane>
                     <TabPane tabId={4}>
@@ -971,7 +997,7 @@ const Dashboard = () => {
                           <CardHeader>
                             <CardTitle>Summary</CardTitle>
                           </CardHeader>
-                          <CardBody>{summary}</CardBody>
+                          <CardBody>{summary || "No Data Available"}</CardBody>
                         </Card>
                         <Row>
                           <Col>
