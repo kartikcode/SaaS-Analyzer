@@ -67,11 +67,11 @@ const routes = [
     layout: "/saas",
   },
   {
-    path: "/usermannual",
-    name: "User Mannual",
-    icon: "tim-icons icon-time-alarm",
-    component: Calendar,
-    layout: "/saas",
+    // path: "/usermannual",
+    // name: "User Mannual",
+    // icon: "tim-icons icon-time-alarm",
+    // // component: "",
+    // layout: "/saas",
   },
 ];
 

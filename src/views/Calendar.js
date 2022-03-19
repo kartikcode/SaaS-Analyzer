@@ -74,7 +74,6 @@ const Calendar = () => {
   return (
     <>
       <div className="content">
-        {alert}
         <Row>
           <Col className="ml-auto mr-auto" md="10">
             <Card className="card-calendar">
