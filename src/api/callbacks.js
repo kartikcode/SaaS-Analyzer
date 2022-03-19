@@ -51,6 +51,11 @@ const getOverviewByTicker = async (ticker) => {
   return response.data;
 };
 
+const getTimeSeriesByTicker = async (ticker) => {
+  const response = await axios.post(`${BASE_URL}/tsbyticker`, { ticker });
+  return response.data;
+};
+
 const getQnaByTicker = async (ticker) => {
   const response = await axios.post(`${BASE_URL}/qnabyticker`, { ticker });
   return response.data;
@@ -62,5 +67,6 @@ export {
   getCompanyByCik,
   getCompanyMetrics,
   getOverviewByTicker,
-  getQnaByTicker,
+  getTimeSeriesByTicker,
+  getQnaByTicker
 };

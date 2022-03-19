@@ -7,41 +7,146 @@ import {
   CardTitle,
   Row,
   Col,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+  Button,
+  FormGroup,
 } from "reactstrap";
 
-import Select from "react-select";
+import ReactDatetime from "react-datetime";
 
-import { chartExample6, chartExample7 } from "variables/charts.js";
+import Select from "react-select";
 
 import ChartCard from "components/Charts/ChartCard";
 import Footer from "components/Footer/Footer";
 import PrintBtn from "components/PrintBtn/PrintBtn";
 import NumberCard from "components/NumberCards/NumberCards";
-import { getCompanyByName } from "api/callbacks";
-import { getOverviewByTicker } from "api/callbacks";
+import {
+  getCompanyByName,
+  getOverviewByTicker,
+  getTimeSeriesByTicker,
+} from "api/callbacks";
+
+const chartData = (fillingdates, data, start, end) => {
+  let max, min, label, datapoints;
+  try {
+    max = Math.max(...data);
+    min = Math.min(...data);
+    label = fillingdates.slice(start, end);
+    datapoints = data.slice(start, end);
+  } catch {
+    max = 400;
+    min = 0;
+    label = [];
+    datapoints = [];
+  }
+  return {
+    data: (canvas) => {
+      let ctx = canvas.getContext("2d");
+
+      let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+
+      gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
+      gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
+      gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+
+      return {
+        labels: label,
+        datasets: [
+          {
+            label: "Data",
+            fill: true,
+            backgroundColor: gradientStroke,
+            borderColor: "#1f8ef1",
+            borderWidth: 2,
+            borderDash: [],
+            borderDashOffset: 0.0,
+            pointBackgroundColor: "#1f8ef1",
+            pointBorderColor: "rgba(255,255,255,0)",
+            pointHoverBackgroundColor: "#1f8ef1",
+            pointBorderWidth: 20,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 15,
+            pointRadius: 4,
+            data: datapoints,
+          },
+        ],
+      };
+    },
+    options: {
+      maintainAspectRatio: false,
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        backgroundColor: "#f5f5f5",
+        titleFontColor: "#333",
+        bodyFontColor: "#666",
+        bodySpacing: 4,
+        xPadding: 12,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+      },
+      responsive: true,
+      scales: {
+        yAxes: [
+          {
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: "rgba(29,140,248,0.0)",
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              suggestedMin: min,
+              suggestedMax: max,
+              padding: 20,
+              fontColor: "#9a9a9a",
+            },
+          },
+        ],
+        xAxes: [
+          {
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: "rgba(29,140,248,0.1)",
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9a9a9a",
+            },
+          },
+        ],
+      },
+    },
+  };
+};
 
 const TabLayout = () => {
   const companyName = localStorage.getItem("companyName");
-  console.log("companyName", companyName);
-  const multipleSelectValues1 = [
-    { value: "0", label: "No of Qualified Leads" },
-    {
-      value: "1",
-      label: "No of new Accounts per month",
-    },
-    {
-      value: "2",
-      label: "Percent conversion rate of each stage",
-    },
-    { value: "3", label: "Length of sales cycle" },
-    { value: "4", label: "Customer Acquisition Cost" },
+
+  const multipleSelectValues = [
+    { value: "ARR", label: "Annual Recurring Revenue (ARR)" },
+    { value: "NRR", label: "Net Revenue Retention Rate (NRR)" },
+    { value: "TCUS", label: "Total customers" },
+    { value: "SME", label: "Sales and marketing expense" },
+    { value: "TEMP", label: "Total Employee" },
   ];
-  const [multipleSelect1, setmultipleSelect1] = React.useState(
-    multipleSelectValues1
-  );
+
+  const [multipleSelect, setMultipleSelect] = useState(multipleSelectValues);
 
   const numberCardValuesData = [
-    { value: "0", label: "Annual Recurring Revenue (ARR)", byLine: "For the latest quarter" },
+    {
+      value: "0",
+      label: "Annual Recurring Revenue (ARR)",
+      byLine: "For the latest quarter",
+    },
     {
       value: "1",
       label: "Net Revenue Retention Rate (NRR)",
@@ -56,12 +161,43 @@ const TabLayout = () => {
 
   const [companyApiData, setCompanyApiData] = useState({});
   const [overviewApiData, setOverviewApiData] = useState({});
-  // eslint-disable-next-line
   const [numberCardValues, setNumberCardValues] =
     React.useState(numberCardValuesData);
   const [ticker, setTicker] = useState("");
+  const [timeSeriesApiData, setTimeSeriesApiData] = useState({
+    quarTS: [],
+    arrTS: [1, 2],
+    custTS: [1, 2],
+    empTS: [1, 2],
+    nrrTS: [1, 2],
+    smTS: [1, 2],
+    srcTS: [1, 2],
+  });
+  const [showTimeSeries, setShowTimeSeries] = useState(false);
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(100);
+  const [fromFillingDate, setFromFillingDate] = useState("");
+  const [toFillingDate, setToFillingDate] = useState("");
   const refToConvertFull = React.createRef();
   const refToConvertTab = React.createRef();
+
+  const filterDatapoints = (from, to) => {
+    const fillingdates = timeSeriesApiData.quarTS;
+    let startbool = false;
+    let endbool = false;
+    fillingdates.forEach((date, i) => {
+      if (startbool && !endbool && Date.parse(date) >= Date.parse(to)) {
+        setEnd(i);
+        endbool = true;
+      } else if (!startbool && Date.parse(date) >= Date.parse(from)) {
+        startbool = true;
+        setStart(i);
+      }
+    });
+
+    if (!startbool) alert("No Filling in this period");
+    if (!endbool) setEnd(500);
+  };
 
   React.useEffect(() => {
     async function setValues() {
@@ -70,154 +206,254 @@ const TabLayout = () => {
       setTicker(companyResult.ticker);
       const overviewResult = await getOverviewByTicker(ticker);
       setOverviewApiData(overviewResult);
+      const timeSeriesData = await getTimeSeriesByTicker(ticker);
+      setTimeSeriesApiData(timeSeriesData);
     }
     setValues();
   }, [companyName, ticker]);
 
+  const overviewPane = (
+    <div ref={refToConvertTab}>
+      <h4 className="h5 text-light text-center">
+        {overviewApiData.description}
+      </h4>
+      <Row>
+        <Col>
+          <NumberCard
+            label={numberCardValues[0].label}
+            mainValue={companyApiData.ARR}
+            byLine={numberCardValues[0].byLine}
+            sentiment="good"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label={numberCardValues[1].label}
+            mainValue={companyApiData.NRR}
+            byLine={numberCardValues[1].byLine}
+            sentiment="bad"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label={numberCardValues[2].label}
+            mainValue={companyApiData.Customers}
+            byLine={numberCardValues[2].byLine}
+            isVisible
+          />
+        </Col>
+      </Row>
+    </div>
+  );
+
+  const metricsPane = (
+    <div ref={refToConvertTab}>
+      <br />
+      <Row className="text-center">
+        <Col md="4">
+          <FormGroup>
+            <ReactDatetime
+              inputProps={{
+                className: "form-control",
+                placeholder: "From Date",
+              }}
+              timeFormat={false}
+              onChange={(value) => setFromFillingDate(value)}
+            />
+          </FormGroup>
+        </Col>
+        <Col md="4">
+          <FormGroup>
+            <ReactDatetime
+              inputProps={{
+                className: "form-control",
+                placeholder: "To Date",
+              }}
+              timeFormat={false}
+              onChange={(value) => setToFillingDate(value)}
+            />
+          </FormGroup>
+        </Col>
+        <Col md="4">
+          <FormGroup>
+            <Button
+              color="primary"
+              onClick={() => {
+                if (toFillingDate > fromFillingDate)
+                  filterDatapoints(fromFillingDate, toFillingDate);
+                else alert("Invalid dates");
+              }}
+            >
+              Filter by Filling Date
+            </Button>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="4">
+          <h4 className="h4 text-white">Select what to display:</h4>
+        </Col>
+        <Col lg="8" md="8" sm="3">
+          <Select
+            className="react-select info"
+            classNamePrefix="react-select"
+            placeholder="Choose metrics"
+            name="multipleSelect"
+            closeMenuOnSelect={false}
+            isMulti
+            value={multipleSelect}
+            onChange={(value) => {
+              if (value == null) setMultipleSelect([]);
+              else setMultipleSelect(value);
+            }}
+            options={multipleSelectValues}
+          />
+        </Col>
+        <Row>
+          <div></div>
+        </Row>
+        <Col>
+          <ChartCard
+            type="line"
+            label={multipleSelectValues[0].label}
+            mainValue={companyApiData.ARR}
+            chartObject={chartData(
+              timeSeriesApiData.quarTS,
+              timeSeriesApiData.arrTS,
+              start,
+              end
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === multipleSelectValues[0].value
+            )}
+          />
+        </Col>
+        <Col>
+          <ChartCard
+            type="line"
+            label={multipleSelectValues[1].label}
+            mainValue={companyApiData.NRR}
+            chartObject={chartData(
+              timeSeriesApiData.quarTS,
+              timeSeriesApiData.nrrTS,
+              start,
+              end
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === multipleSelectValues[1].value
+            )}
+          />
+        </Col>
+        <Col>
+          <ChartCard
+            type="line"
+            label={multipleSelectValues[2].label}
+            mainValue={companyApiData.Customers}
+            chartObject={chartData(
+              timeSeriesApiData.quarTS,
+              timeSeriesApiData.custTS,
+              start,
+              end
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === multipleSelectValues[2].value
+            )}
+          />
+        </Col>
+        <Col>
+          <ChartCard
+            type="line"
+            label={multipleSelectValues[3].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiData.quarTS,
+              timeSeriesApiData.smTS,
+              start,
+              end
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === multipleSelectValues[3].value
+            )}
+          />
+        </Col>
+        <Col>
+          <ChartCard
+            type="line"
+            label={multipleSelectValues[4].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiData.quarTS,
+              timeSeriesApiData.empTS,
+              start,
+              end
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === multipleSelectValues[4].value
+            )}
+          />
+        </Col>
+      </Row>
+    </div>
+  );
+
   return (
     <>
       <div ref={refToConvertFull}>
-      <div className="container full-width">
-        <Row>
-          <Col className="ml-auto mr-auto" md="12">
-            <Card className="card-plain card-subcategories">
-              <CardHeader>
-                <CardTitle className="text-center mt-5" tag="h1">
-                  <h4 className="h1 text-white bold text-center">
-                    {companyName}
-                  </h4>
-                </CardTitle>
-                <div className="row">
-                        {/* <div className="flex bg-light mt-auto">{companyName}</div> */}
-                        <PrintBtn refToConvert={refToConvertFull} />
-                </div>
-              </CardHeader>
-              <CardBody>
-                    <div ref={refToConvertTab}>
-                      <h4 className="h5 text-light text-center">
-                        {overviewApiData.description}
-                      </h4>
-                      <Row>
-                        <Col>
-                          <NumberCard
-                            label={numberCardValues[0].label}
-                            mainValue={(companyApiData.ARR)}
-                            byLine={numberCardValues[0].byLine}
-                            sentiment="good"
-                            isVisible
-                          />
-                        </Col>
-                        <Col>
-                          <NumberCard
-                            label={numberCardValues[1].label}
-                            mainValue={companyApiData.NRR}
-                            byLine={numberCardValues[1].byLine}
-                            sentiment="bad"
-                            isVisible
-                          />
-                        </Col>
-                        <Col>
-                          <NumberCard
-                            label={numberCardValues[2].label}
-                            mainValue={companyApiData.Customers}
-                            byLine={numberCardValues[2].byLine}
-                            isVisible
-                          />
-                        </Col>
-                      </Row>
-
-                    <div ref={refToConvertTab}>
-                      {/* <h4 className="h4 text-center">
-                        How efficient and predictible is your sales funnel?
-                      </h4> */}
-                      <br />
-                      <Row>
-                        <Col md="4">
-                          <h4 className="h4 text-white">
-                            Select what to display:
-                          </h4>
-                        </Col>
-                        <Col lg="8" md="8" sm="3">
-                          <Select
-                            className="react-select info"
-                            classNamePrefix="react-select"
-                            placeholder="Choose metrics"
-                            name="multipleSelect"
-                            closeMenuOnSelect={false}
-                            isMulti
-                            value={multipleSelect1}
-                            onChange={(value) => {
-                              if (value == null) setmultipleSelect1([]);
-                              else setmultipleSelect1(value);
-                            }}
-                            options={multipleSelectValues1}
-                          />
-                        </Col>
-                      </Row>
-                      <br />
-                      <Row>
-                        <ChartCard
-                          type="line"
-                          label={multipleSelectValues1[0].label}
-                          mainValue="7500"
-                          chartObject={chartExample6}
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[0].value
-                          )}
-                        />
-                        <ChartCard
-                          type="line"
-                          label={multipleSelectValues1[1].label}
-                          mainValue="750000"
-                          chartObject={chartExample6}
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[1].value
-                          )}
-                        />
-                      </Row>
-                      <Row>
-                        <ChartCard
-                          type="bar"
-                          label={multipleSelectValues1[2].label}
-                          mainValue="7500"
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[2].value
-                          )}
-                          chartObject={chartExample7}
-                        />
-                      </Row>
-                      <Row>
-                        <ChartCard
-                          type="bar"
-                          label={multipleSelectValues1[3].label}
-                          mainValue="7500"
-                          chartObject={chartExample7}
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[3].value
-                          )}
-                        />
-                        <ChartCard
-                          type="line"
-                          label={multipleSelectValues1[4].label}
-                          mainValue="96545"
-                          chartObject={chartExample6}
-                          isVisible={multipleSelect1.some(
-                            (selection) =>
-                              selection.value === multipleSelectValues1[4].value
-                          )}
-                        />
-                      </Row>
-                    </div>
-                    </div>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+        <div className="container full-width">
+          <Row>
+            <Col className="ml-auto mr-auto" md="12">
+              <Card className="card-plain card-subcategories">
+                <CardHeader>
+                  <CardTitle className="text-center mt-5" tag="h1">
+                    <h4 className="h1 text-white bold text-center">
+                      {companyName}
+                    </h4>
+                  </CardTitle>
+                  <div className="row">
+                    {/* <div className="flex bg-light mt-auto">{companyName}</div> */}
+                    <PrintBtn refToConvert={refToConvertFull} />
+                  </div>
+                </CardHeader>
+                <CardBody>
+                  <Nav
+                    className="nav-pills-info nav-pills-icons justify-content-center"
+                    pills
+                  >
+                    <NavItem>
+                      <NavLink
+                        data-toggle="tab"
+                        className={showTimeSeries ? "" : "active"}
+                        onClick={() => setShowTimeSeries(false)}
+                      >
+                        <i className="tim-icons icon-zoom-split" />
+                        Overview
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        data-toggle="tab"
+                        className={showTimeSeries ? "active" : ""}
+                        onClick={() => setShowTimeSeries(true)}
+                      >
+                        <i className="tim-icons icon-paper" />
+                        Filling Data
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
+                  <TabContent
+                    className="tab-space tab-subcategories"
+                    activeTab={showTimeSeries ? "metrics" : "overview"}
+                  >
+                    <TabPane tabId="overview">{overviewPane}</TabPane>
+                    <TabPane tabId="metrics">{metricsPane}</TabPane>
+                  </TabContent>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
       </div>
       <Footer fluid />
     </>
