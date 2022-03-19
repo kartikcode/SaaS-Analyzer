@@ -1,22 +1,15 @@
 /*!
-
 =========================================================
 * Black Dashboard PRO React - v1.2.0
 =========================================================
-
 * Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
 * Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
 * Coded by Creative Tim
-
 =========================================================
-
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
 */
 import React, { useEffect, useState } from "react";
 import LoadingOverlay from "react-loading-overlay";
-
 // reactstrap components
 import {
   Button,
@@ -62,7 +55,6 @@ const customStyles = {
     color: "#1d8cf8",
   }),
 };
-
 const chartData = (fillingdates, data, start, end) => {
   let max, min, label, datapoints;
   try {
@@ -79,13 +71,10 @@ const chartData = (fillingdates, data, start, end) => {
   return {
     data: (canvas) => {
       let ctx = canvas.getContext("2d");
-
       let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-
       gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
       gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
       gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
-
       return {
         labels: label,
         datasets: [
@@ -160,7 +149,6 @@ const chartData = (fillingdates, data, start, end) => {
     },
   };
 };
-
 const Dashboard = () => {
   const [companyName, setCompanyName] = React.useState({
     value: "",
@@ -202,7 +190,6 @@ const Dashboard = () => {
     pbTS: [1],
     icacTS: [1],
   });
-
   const sendAlertNotification = async (message) => {
     let options = {
       place: "tr",
@@ -213,7 +200,6 @@ const Dashboard = () => {
     };
     notificationAlertRef.current.notificationAlert(options);
   };
-
   const setOverviewData = async () => {
     const overviewResult = await getOverviewByTicker(ticker);
     setOverviewApiData(overviewResult);
@@ -222,7 +208,6 @@ const Dashboard = () => {
     const timeSeriesData = await getTimeSeriesByTicker(ticker);
     setTimeSeriesApiData(timeSeriesData);
   };
-
   const setSentimentData = async () => {
     const sentimentData = await getSentimentByTicker(ticker);
     if (sentimentData.dictSenti === "")
@@ -232,7 +217,6 @@ const Dashboard = () => {
       });
     else setSentimentApiData(sentimentData);
   };
-
   const settwitterdata = async () => {
     const twitdata = await getTwitByTicker(ticker);
     console.log(twitdata.trendingWords);
@@ -284,11 +268,9 @@ const Dashboard = () => {
     setIsLoading(false);
     setIsFetched(true);
   };
-
   const handleTagsinput = (tagsinput) => {
     setTagsinput(tagsinput);
   };
-
   const filterDatapoints = (from, to) => {
     const fillingdates = timeSeriesApiData.quarTS;
     let startbool = false;
@@ -302,7 +284,6 @@ const Dashboard = () => {
         setStart(i);
       }
     });
-
     if (!startbool) alert("No Filling in this period");
     if (!endbool) setEnd(500);
   };
@@ -428,7 +409,6 @@ const Dashboard = () => {
       </Card>
     </div>
   );
-
   const metricsPane = (
     <div ref={refToConvertTab}>
       <br />
@@ -791,5 +771,4 @@ const Dashboard = () => {
     </>
   );
 };
-
 export default Dashboard;

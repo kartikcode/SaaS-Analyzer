@@ -27,7 +27,7 @@ const HomeLayout = () => {
       <div className="d-flex flex-column min-vh-100">
         <div className="container" style={{ paddingTop: 25 }}>
           <blockquote className="blockquote text-center">
-          <h1 className="mb-2">SEFASSC</h1>
+          <h1 className="mb-2">SaaS Analyzer</h1>
             <h3 className="mb-0">
               SEC Filing Analyzer for SaaS Companies
             </h3>

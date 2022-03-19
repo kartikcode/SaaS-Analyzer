@@ -33,9 +33,14 @@ const getTimeSeriesByTicker = async (ticker) => {
 };
 
 const getQnaByTicker = async (ticker) => {
-  const response = await axios.post(`${BASE_URL}/qnabyticker`, { ticker });
+  const response = await axios.post(`${BASE_URL}/secbyticker`, { ticker });
   return response.data;
 };
+
+const getSectionByTicker = async (ticker) => {
+  const response = await axios.post(`${BASE_URL}/qnabyticker`, { ticker });
+  return response.data;
+}
 
 const getSentimentByTicker = async (ticker) => {
   const response = await axios.post(`${BASE_URL}/sentibyticker`, { ticker });
@@ -57,4 +62,5 @@ export {
   getQnaByTicker,
   getSentimentByTicker,
   getTwitByTicker,
+  getSectionByTicker,
 };

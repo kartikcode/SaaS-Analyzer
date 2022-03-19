@@ -26,7 +26,7 @@ import ExtendedForms from "views/forms/ExtendedForms.js";
 import RegularForms from "views/forms/RegularForms.js";
 import Calendar from "views/Calendar.js";
 import Widgets from "views/Widgets.js";
-import Charts from "views/Charts.js";
+import Extract from "views/Extract.js";
 import Dashboard from "views/Dashboard.js";
 import Buttons from "views/components/Buttons.js";
 import SweetAlert from "views/components/SweetAlert.js";
@@ -63,7 +63,7 @@ const routes = [
     path: "/extract",
     name: "Extract",
     icon: "tim-icons icon-chart-bar-32",
-    component: Charts,
+    component: Extract,
     layout: "/admin",
   },
   {
