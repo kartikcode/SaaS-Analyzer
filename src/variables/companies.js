@@ -298,7 +298,7 @@ export const timeseriesChartLabels = [
   { value: "TCUS", label: "Total customers" },
   { value: "PP", label: "Payback Period (Months)" },
   { value: "ICAC", label: "Implied CAC" },
-  { value: "ILTV", label: "Implied LTV" },
+  { value: "ILTV", label: "Implied LTV (5 Years)" },
 ];
 
 export const overviewDataLabels = [

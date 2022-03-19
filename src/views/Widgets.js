@@ -1,550 +1,931 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useEffect, useState } from "react";
+import LoadingOverlay from "react-loading-overlay";
 
 // reactstrap components
 import {
-  Badge,
   Button,
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
-  CardImg,
   CardTitle,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
   Label,
   FormGroup,
-  Input,
-  CustomInput,
-  ListGroupItem,
-  ListGroup,
-  Table,
   Row,
   Col,
-  UncontrolledTooltip,
+  NavItem,
+  NavLink,
+  Nav,
+  TabContent,
+  TabPane,
 } from "reactstrap";
+import ChartCard from "components/Charts/ChartCard";
+import NumberCard from "components/NumberCards/NumberCards";
+import NotificationAlert from "react-notification-alert";
+import PrintBtn from "components/PrintBtn/PrintBtn";
+import Select from "react-select";
+import ReactDatetime from "react-datetime";
+import {
+  searchOptions,
+  overviewDataLabels,
+  timeseriesChartLabels,
+} from "variables/companies";
+import {
+  getCompanyByName,
+  getOverviewByTicker,
+  getTimeSeriesByTicker,
+} from "api/callbacks.js";
 
-const Widgets = () => {
+const customStyles = {
+  input: (provided) => ({
+    ...provided,
+    color: "#1d8cf8",
+  }),
+};
+
+const chartData = (fillingdates, data, start, end) => {
+  let max, min, label, datapoints;
+  try {
+    max = Math.max(...data);
+    min = Math.min(...data);
+    label = fillingdates.slice(start, end);
+    datapoints = data.slice(start, end);
+  } catch {
+    max = 400;
+    min = 0;
+    label = [];
+    datapoints = [];
+  }
+  return {
+    data: (canvas) => {
+      let ctx = canvas.getContext("2d");
+
+      let gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+
+      gradientStroke.addColorStop(1, "rgba(29,140,248,0.2)");
+      gradientStroke.addColorStop(0.4, "rgba(29,140,248,0.0)");
+      gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
+
+      return {
+        labels: label,
+        datasets: [
+          {
+            label: "Data",
+            fill: true,
+            backgroundColor: gradientStroke,
+            borderColor: "#1f8ef1",
+            borderWidth: 2,
+            borderDash: [],
+            borderDashOffset: 0.0,
+            pointBackgroundColor: "#1f8ef1",
+            pointBorderColor: "rgba(255,255,255,0)",
+            pointHoverBackgroundColor: "#1f8ef1",
+            pointBorderWidth: 20,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 15,
+            pointRadius: 4,
+            data: datapoints,
+          },
+        ],
+      };
+    },
+    options: {
+      maintainAspectRatio: false,
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        backgroundColor: "#f5f5f5",
+        titleFontColor: "#333",
+        bodyFontColor: "#666",
+        bodySpacing: 4,
+        xPadding: 12,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+      },
+      responsive: true,
+      scales: {
+        yAxes: [
+          {
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: "rgba(29,140,248,0.0)",
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              suggestedMin: min,
+              suggestedMax: max,
+              padding: 20,
+              fontColor: "#9a9a9a",
+            },
+          },
+        ],
+        xAxes: [
+          {
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: "rgba(29,140,248,0.1)",
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9a9a9a",
+            },
+          },
+        ],
+      },
+    },
+  };
+};
+
+const Dashboard = () => {
+  const [companyNameA, setCompanyNameA] = React.useState({
+    value: "",
+    label: "",
+  });
+  const [companyNameB, setCompanyNameB] = React.useState({
+    value: "",
+    label: "",
+  });
+
+  const [isOpen, setIsOpen] = useState(1);
+  const [lists, setLists] = useState([]);
+  const [summary, setSummary] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetched, setIsFetched] = useState(false);
+  const [naviTab, setNaviTab] = useState(1);
+  const notificationAlertRef = React.useRef(null);
+  const refToConvertFull = React.createRef();
+  const refToConvertTab = React.createRef();
+  const [sentimentApiData, setSentimentApiData] = useState({
+    finbSenti: {},
+    dictSenti: {},
+  });
+  const [openedCollapseOne, setOpenedCollapseOne] = useState(false);
+  const [tickerA, setTickerA] = useState("");
+  const [tickerB, setTickerB] = useState("");
+  const [startA, setStartA] = useState(0);
+  const [endA, setEndA] = useState(100);
+  const [startB, setStartB] = useState(0);
+  const [endB, setEndB] = useState(100);
+  const [fromFillingDate, setFromFillingDate] = useState("");
+  const [toFillingDate, setToFillingDate] = useState("");
+  const [multipleSelect, setMultipleSelect] = useState(timeseriesChartLabels);
+  const [tagsinput, setTagsinput] = useState(["twitter", "trends"]);
+  const [sentimentElement, setSentimentElement] = useState(<></>);
+  const [companyApiDataA, setCompanyApiDataA] = useState({});
+  const [overviewApiDataA, setOverviewApiDataA] = useState({});
+  const [timeSeriesApiDataA, setTimeSeriesApiDataA] = useState({
+    quarTS: [1],
+    arrTS: [1],
+    custTS: [1],
+    empTS: [1],
+    nrrTS: [1],
+    smTS: [1],
+    srcTS: [1],
+    pbTS: [1],
+    icacTS: [1],
+  });
+  const [companyApiDataB, setCompanyApiDataB] = useState({});
+  const [overviewApiDataB, setOverviewApiDataB] = useState({});
+  const [timeSeriesApiDataB, setTimeSeriesApiDataB] = useState({
+    quarTS: [1],
+    arrTS: [1],
+    custTS: [1],
+    empTS: [1],
+    nrrTS: [1],
+    smTS: [1],
+    srcTS: [1],
+    pbTS: [1],
+    icacTS: [1],
+  });
+
+  const sendAlertNotification = async (message) => {
+    let options = {
+      place: "tr",
+      message: message,
+      type: "danger",
+      icon: "tim-icons icon-alert-circle-exc",
+      autoDismiss: 7,
+    };
+    notificationAlertRef.current.notificationAlert(options);
+  };
+
+  const setOverviewData = async () => {
+    const overviewResult = await getOverviewByTicker(tickerA);
+    setOverviewApiDataA(overviewResult);
+  };
+  const setTimeSeriesData = async () => {
+    const timeSeriesData = await getTimeSeriesByTicker(tickerA);
+    setTimeSeriesApiDataA(timeSeriesData);
+  };
+
+  const setOverviewDatB = async () => {
+    const overviewResult = await getOverviewByTicker(tickerB);
+    setOverviewApiDataB(overviewResult);
+  };
+  const setTimeSeriesDatB = async () => {
+    const timeSeriesData = await getTimeSeriesByTicker(tickerB);
+    setTimeSeriesApiDataB(timeSeriesData);
+  };
+
+  useEffect(() => {
+    if (tickerA !== "") {
+      setOverviewData();
+      setTimeSeriesData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tickerA]);
+  useEffect(() => {
+    if (tickerB !== "") {
+      setOverviewDatB();
+      setTimeSeriesDatB();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tickerB]);
+
+  const handleToggle = (id) => {
+    if (isOpen === id) {
+      setIsOpen(null);
+    } else {
+      setIsOpen(id);
+    }
+  };
+
+  const handleOnClickSearch = async () => {
+    async function setValues() {
+      setOverviewData();
+      setTimeSeriesData();
+      setOverviewDatB();
+      setTimeSeriesDatB();
+    }
+    setIsLoading(true);
+    if (companyNameA.value.length === 0 || companyNameB.value.length === 0) {
+      sendAlertNotification("Please select company");
+      setIsLoading(false);
+      return;
+    }
+    if (companyNameA.value === companyNameB.value) {
+      sendAlertNotification("Please select different company");
+      setIsLoading(false);
+      return;
+    }
+    const companyResultA = await getCompanyByName(companyNameA.label);
+    setCompanyApiDataA(companyResultA);
+    setTickerA(companyResultA.ticker);
+    const companyResult = await getCompanyByName(companyNameB.label);
+    setCompanyApiDataB(companyResult);
+    setTickerB(companyResult.ticker);
+    await setValues();
+    setIsLoading(false);
+    setIsFetched(true);
+  };
+  const filterDatapoints = (from, to) => {
+    filterDatapointsA(from, to);
+    filterDatapointsB(from, to);
+  };
+
+  const filterDatapointsA = async (from, to) => {
+    const fillingdates = timeSeriesApiDataA.quarTS;
+    let startbool = false;
+    let endbool = false;
+    fillingdates.forEach((date, i) => {
+      if (startbool && !endbool && Date.parse(date) >= Date.parse(to)) {
+        setEndA(i);
+        endbool = true;
+      } else if (!startbool && Date.parse(date) >= Date.parse(from)) {
+        startbool = true;
+        setStartA(i);
+      }
+    });
+
+    if (!startbool) alert("No Filling in this period");
+    if (!endbool) setEndA(500);
+  };
+
+  const filterDatapointsB = async (from, to) => {
+    const fillingdates = timeSeriesApiDataA.quarTS;
+    let startbool = false;
+    let endbool = false;
+    fillingdates.forEach((date, i) => {
+      if (startbool && !endbool && Date.parse(date) >= Date.parse(to)) {
+        setEndB(i);
+        endbool = true;
+      } else if (!startbool && Date.parse(date) >= Date.parse(from)) {
+        startbool = true;
+        setStartB(i);
+      }
+    });
+
+    if (!startbool) alert("No Filling in this period");
+    if (!endbool) setEndB(500);
+  };
+
+  const refToConvertSummary = React.createRef();
+
+  const searchForm = (
+    <Card>
+      <CardBody>
+        <FormGroup>
+          <Label for="search">Company Name A</Label>
+          <Select
+            styles={customStyles}
+            className="react-select info"
+            classNamePrefix="react-select"
+            onChange={(value) => setCompanyNameA(value)}
+            options={searchOptions}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="search">Company Name B</Label>
+          <Select
+            styles={customStyles}
+            className="react-select info"
+            classNamePrefix="react-select"
+            onChange={(value) => setCompanyNameB(value)}
+            options={searchOptions}
+          />
+        </FormGroup>
+        <div className="form-row">
+          <Button color="primary" onClick={handleOnClickSearch}>
+            Search
+          </Button>
+        </div>
+      </CardBody>
+    </Card>
+  );
+  const overviewPane = (
+    <div ref={refToConvertTab}>
+      <Row>
+        <Col>
+          <b>{companyNameA.label}</b>
+        </Col>
+        <Col>
+          <b>{companyNameB.label}</b>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label={overviewDataLabels[0].label}
+            mainValue={companyApiDataA.ARR}
+            byLine={overviewDataLabels[0].byLine}
+            sentiment="good"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label={overviewDataLabels[0].label}
+            mainValue={companyApiDataB.ARR}
+            byLine={overviewDataLabels[0].byLine}
+            sentiment="good"
+            isVisible
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label={overviewDataLabels[1].label}
+            mainValue={companyApiDataA.NRR}
+            byLine={overviewDataLabels[1].byLine}
+            sentiment="bad"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label={overviewDataLabels[1].label}
+            mainValue={companyApiDataB.NRR}
+            byLine={overviewDataLabels[1].byLine}
+            sentiment="bad"
+            isVisible
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label={overviewDataLabels[2].label}
+            mainValue={companyApiDataA.Customers}
+            byLine={overviewDataLabels[2].byLine}
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label={overviewDataLabels[2].label}
+            mainValue={companyApiDataB.Customers}
+            byLine={overviewDataLabels[2].byLine}
+            isVisible
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label="Magic Number"
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiDataA?.mg) * 100000) / 100
+            }
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label="Magic Number"
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiDataB?.mg) * 100000) / 100
+            }
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label="Payback period (months)"
+            mainValue={parseFloat(parseInt(timeSeriesApiDataA?.pbTSlast)) / 100}
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label="Payback period (months)"
+            mainValue={parseFloat(parseInt(timeSeriesApiDataB?.pbTSlast)) / 100}
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label="Payback period (months)"
+            mainValue={parseFloat(parseInt(timeSeriesApiDataA?.pbTSlast)) / 100}
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label="Payback period (months)"
+            mainValue={parseFloat(parseInt(timeSeriesApiDataB?.pbTSlast)) / 100}
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label="CAC Ratio"
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiDataA?.cac) * 100000) / 100
+            }
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label="CAC Ratio"
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiDataB?.cac) * 100000) / 100
+            }
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <NumberCard
+            label="LTV:CAC Ratio"
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiDataA?.ltvcac) * 100000) / 100
+            }
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+        <Col>
+          <NumberCard
+            label="LTV:CAC Ratio"
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiDataB?.ltvcac) * 100000) / 100
+            }
+            byLine="For the latest quarter"
+            isVisible
+          />
+        </Col>
+      </Row>
+    </div>
+  );
+
+  const metricsPane = (
+    <div ref={refToConvertTab}>
+      <br />
+      <Row className="text-center">
+        <Col md="4">
+          <FormGroup>
+            <ReactDatetime
+              inputProps={{
+                className: "form-control",
+                placeholder: "From Date",
+              }}
+              timeFormat={false}
+              onChange={(value) => setFromFillingDate(value)}
+            />
+          </FormGroup>
+        </Col>
+        <Col md="4">
+          <FormGroup>
+            <ReactDatetime
+              inputProps={{
+                className: "form-control",
+                placeholder: "To Date",
+              }}
+              timeFormat={false}
+              onChange={(value) => setToFillingDate(value)}
+            />
+          </FormGroup>
+        </Col>
+        <Col md="4">
+          <FormGroup>
+            <Button
+              color="primary"
+              onClick={() => {
+                if (toFillingDate > fromFillingDate)
+                  filterDatapoints(fromFillingDate, toFillingDate);
+                else sendAlertNotification("Invalid Dates");
+              }}
+            >
+              Filter by Filling Date
+            </Button>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="4">
+          <h4 className="h4 text-white">Select what to display:</h4>
+        </Col>
+        <Col lg="8" md="8" sm="3">
+          <Select
+            className="react-select info"
+            classNamePrefix="react-select"
+            placeholder="Choose metrics"
+            name="multipleSelect"
+            closeMenuOnSelect={false}
+            isMulti
+            value={multipleSelect}
+            onChange={(value) => {
+              if (value == null) setMultipleSelect([]);
+              else setMultipleSelect(value);
+            }}
+            options={timeseriesChartLabels}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <b>{companyNameA.label}</b>
+        </Col>
+        <Col>
+          <b>{companyNameB.label}</b>
+        </Col>
+      </Row>
+      <Row>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[0].label}
+            mainValue={companyApiDataA.ARR}
+            chartObject={chartData(
+              timeSeriesApiDataA.quarTS,
+              timeSeriesApiDataA.arrTS,
+              startA,
+              endA
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[0].value
+            )}
+          />
+        </Col>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[0].label}
+            mainValue={companyApiDataB.ARR}
+            chartObject={chartData(
+              timeSeriesApiDataB.quarTSB,
+              timeSeriesApiDataB.arrTS,
+              startB,
+              endB
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[0].value
+            )}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[1].label}
+            mainValue={companyApiDataA.NRR}
+            chartObject={chartData(
+              timeSeriesApiDataA.quarTS,
+              timeSeriesApiDataA.nrrTS,
+              startA,
+              endA
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[1].value
+            )}
+          />
+        </Col>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[1].label}
+            mainValue={companyApiDataB.NRR}
+            chartObject={chartData(
+              timeSeriesApiDataB.quarTS,
+              timeSeriesApiDataB.nrrTS,
+              startB,
+              endB
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[1].value
+            )}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[2].label}
+            mainValue={companyApiDataA.Customers}
+            chartObject={chartData(
+              timeSeriesApiDataA.quarTS,
+              timeSeriesApiDataA.custTS,
+              startA,
+              endA
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[2].value
+            )}
+          />
+        </Col>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[2].label}
+            mainValue={companyApiDataB.Customers}
+            chartObject={chartData(
+              timeSeriesApiDataB.quarTS,
+              timeSeriesApiDataB.custTS,
+              startB,
+              endB
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[2].value
+            )}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[3].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiDataA.quarTS,
+              timeSeriesApiDataA.pbTS,
+              startA,
+              endA
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[3].value
+            )}
+          />
+        </Col>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[3].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiDataB.quarTS,
+              timeSeriesApiDataB.pbTS,
+              startB,
+              endB
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[3].value
+            )}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[4].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiDataA.quarTS,
+              timeSeriesApiDataA.icacTS,
+              startA,
+              endA
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[4].value
+            )}
+          />
+        </Col>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[4].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiDataB.quarTS,
+              timeSeriesApiDataB.icacTS,
+              startB,
+              endB
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[4].value
+            )}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[5].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiDataA.quarTS,
+              timeSeriesApiDataA.ltvTS,
+              startA,
+              endA
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[5].value
+            )}
+          />
+        </Col>
+        <Col className="col-md-6">
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[5].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiDataB.quarTS,
+              timeSeriesApiDataB.ltvTS,
+              startB,
+              endB
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[5].value
+            )}
+          />
+        </Col>
+      </Row>
+    </div>
+  );
+  const companyDataElement = (
+    <>
+      <div ref={refToConvertFull}>
+        <div className="container full-width">
+          <Row>
+            <Col className="ml-auto mr-auto" md="12">
+              <Card className="card-plain card-subcategories">
+                <CardHeader>
+                  <CardTitle className="text-center mt-5" tag="h1">
+                    <h1 className="text-white bold text-center">
+                      <span style={{ verticalAlign: "middle" }}>
+                        {companyNameA.label}
+                      </span>
+                      {"  "}
+                      <span
+                        style={{
+                          color: "black",
+                          backgroundColor: "white",
+                          borderRadius: "10px",
+                          fontSize: "70%",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        {tickerA}
+                      </span>
+                      {"  "}
+                      <b>vs</b>
+                      {"  "}
+
+                      <span style={{ verticalAlign: "middle" }}>
+                        {companyNameB.label}
+                      </span>
+                      {"  "}
+                      <span
+                        style={{
+                          color: "black",
+                          backgroundColor: "white",
+                          borderRadius: "10px",
+                          fontSize: "70%",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        {tickerB}
+                      </span>
+                    </h1>
+                  </CardTitle>
+                  <div className="row">
+                    {/* <div className="flex bg-light mt-auto">{companyName}</div> */}
+                    <PrintBtn refToConvert={refToConvertFull} />
+                  </div>
+                </CardHeader>
+                <CardBody>
+                  <Nav
+                    className="nav-pills-info nav-pills-icons justify-content-center"
+                    pills
+                  >
+                    <NavItem>
+                      <NavLink
+                        data-toggle="tab"
+                        className={naviTab === 1 ? "active" : ""}
+                        onClick={() => setNaviTab(1)}
+                      >
+                        <i className="tim-icons icon-zoom-split" />
+                        Overview
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        data-toggle="tab"
+                        className={naviTab === 2 ? "active" : ""}
+                        onClick={() => setNaviTab(2)}
+                      >
+                        <i className="tim-icons icon-paper" />
+                        Deep Dive
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
+                  <TabContent
+                    className="tab-space tab-subcategories"
+                    activeTab={naviTab}
+                  >
+                    <TabPane tabId={1}>{overviewPane}</TabPane>
+                    <TabPane tabId={2}>{metricsPane}</TabPane>
+                  </TabContent>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      </div>
+    </>
+  );
   return (
     <>
-      <div className="content">
-        <Row>
-          <Col className="text-center" lg="6" sm="6">
-            <Card className="card-tasks text-left">
-              <CardHeader>
-                <h6 className="title d-inline">Tasks(5)</h6>
-                <p className="card-category d-inline">Today</p>
-                <UncontrolledDropdown>
-                  <DropdownToggle
-                    caret
-                    className="btn-icon"
-                    color="link"
-                    data-toggle="dropdown"
-                    type="button"
-                  >
-                    <i className="tim-icons icon-settings-gear-63" />
-                  </DropdownToggle>
-                  <DropdownMenu right>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      Action
-                    </DropdownItem>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      Another action
-                    </DropdownItem>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      Something else here
-                    </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </CardHeader>
-              <CardBody>
-                <div className="table-responsive table-full-width">
-                  <Table>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Update the Documentation</p>
-                          <p className="text-muted">
-                            Dwuamish Head, Seattle, WA 8:47 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip170482171"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-settings" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip170482171"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input
-                                defaultChecked
-                                defaultValue=""
-                                type="checkbox"
-                              />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">GDPR Compliance</p>
-                          <p className="text-muted">
-                            Alki Ave SW, Seattle, WA 98116, SUA 12:29 PM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip720626938"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-settings" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip720626938"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Export the processed files</p>
-                          <p className="text-muted">
-                            Capitol Hill, Seattle, WA 12:34 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip598446371"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-settings" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip598446371"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Release v2.0.0</p>
-                          <p className="text-muted">
-                            Ra Ave SW, Seattle, WA 98116, SUA 11:19 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip797367748"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-settings" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip797367748"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Solve the issues</p>
-                          <p className="text-muted">
-                            Caption Hill, LA 12:34 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip147107903"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-settings" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip147107903"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Arival at export process</p>
-                          <p className="text-muted">
-                            Capitol Hill, Seattle, WA 12:34 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip841399405"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-settings" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip841399405"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div>
-              </CardBody>
-            </Card>
-            <Card className="card-contributions">
-              <CardBody>
-                <CardTitle tag="h1">6,332</CardTitle>
-                <h3 className="card-category">Total Public Contributions</h3>
-                <p className="card-description">
-                  After a very successful two-year run, we’re going to be
-                  changing the way that contributions work.
-                </p>
-              </CardBody>
-              <hr />
-              <CardFooter>
-                <Row>
-                  <Col className="ml-auto mr-auto" lg="6" md="8">
-                    <div className="card-stats justify-content-center">
-                      <div className="d-flex justify-content-center align-items-center">
-                        <span className="mr-2">Off</span>
-                        <CustomInput
-                          type="switch"
-                          id="switch-1"
-                          defaultChecked
-                          className="mt-n4"
-                        />
-                        <span className="ml-n4">On</span>
-                      </div>
-                      <span>All public contributions</span>
-                    </div>
-                  </Col>
-                  <Col className="ml-auto mr-auto" lg="6" md="8">
-                    <div className="card-stats justify-content-center">
-                      <div className="d-flex justify-content-center align-items-center">
-                        <span className="mr-2">Off</span>
-                        <CustomInput
-                          type="switch"
-                          id="switch-2"
-                          className="mt-n4"
-                        />
-                        <span className="ml-n4">On</span>
-                      </div>
-                      <span>Past week contributions</span>
-                    </div>
-                  </Col>
-                </Row>
-              </CardFooter>
-            </Card>
-          </Col>
-          <Col lg="6" sm="6">
-            <Card className="card-timeline card-plain">
-              <CardBody>
-                <ul className="timeline timeline-simple">
-                  <li className="timeline-inverted">
-                    <div className="timeline-badge danger">
-                      <i className="tim-icons icon-bag-16" />
-                    </div>
-                    <div className="timeline-panel">
-                      <div className="timeline-heading">
-                        <Badge color="danger">Some Title</Badge>
-                      </div>
-                      <div className="timeline-body">
-                        <p>
-                          Wifey made the best Father's Day meal ever. So
-                          thankful so happy so blessed. Thank you for making my
-                          family We just had fun with the “future” theme !!! It
-                          was a fun night all together ... The always rude Kanye
-                          Show at 2am Sold Out Famous viewing @ Figueroa and
-                          12th in downtown.
-                        </p>
-                      </div>
-                      <h6>
-                        <i className="ti-time" />
-                        11 hours ago via Twitter
-                      </h6>
-                    </div>
-                  </li>
-                  <li className="timeline-inverted">
-                    <div className="timeline-badge success">
-                      <i className="tim-icons icon-gift-2" />
-                    </div>
-                    <div className="timeline-panel">
-                      <div className="timeline-heading">
-                        <Badge color="success">Another One</Badge>
-                      </div>
-                      <div className="timeline-body">
-                        <p>
-                          Thank God for the support of my wife and real friends.
-                          I also wanted to point out that it’s the first album
-                          to go number 1 off of streaming!!! I love you Ellen
-                          and also my number one design rule of anything I do
-                          from shoes to music to homes is that Kim has to like
-                          it....
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                  <li className="timeline-inverted">
-                    <div className="timeline-badge info">
-                      <i className="tim-icons icon-planet" />
-                    </div>
-                    <div className="timeline-panel">
-                      <div className="timeline-heading">
-                        <Badge color="info">Another Title</Badge>
-                      </div>
-                      <div className="timeline-body">
-                        <p>
-                          Called I Miss the Old Kanye That’s all it was Kanye
-                          And I love you like Kanye loves Kanye Famous viewing @
-                          Figueroa and 12th in downtown LA 11:10PM
-                        </p>
-                        <p>
-                          What if Kanye made a song about Kanye Royère doesn't
-                          make a Polar bear bed but the Polar bear couch is my
-                          favorite piece of furniture we own It wasn’t any
-                          Kanyes Set on his goals Kanye
-                        </p>
-                        <hr />
-                      </div>
-                      <div className="timeline-footer">
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                            caret
-                            className="btn-round"
-                            color="info"
-                            data-toggle="dropdown"
-                            type="button"
-                          >
-                            <i className="tim-icons icon-bullet-list-67" />
-                          </DropdownToggle>
-                          <DropdownMenu>
-                            <DropdownItem
-                              href="#pablo"
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              Action
-                            </DropdownItem>
-                            <DropdownItem
-                              href="#pablo"
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              Another action
-                            </DropdownItem>
-                            <DropdownItem
-                              href="#pablo"
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              Something else here
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
-          <Col lg="3" md="6">
-            <Card className="card-pricing card-primary card-white">
-              <CardBody>
-                <CardTitle tag="h1">pro</CardTitle>
-                <CardImg
-                  alt="..."
-                  src={require("assets/img/card-primary.png").default}
-                />
-                <ListGroup>
-                  <ListGroupItem>300 messages</ListGroupItem>
-                  <ListGroupItem>150 emails</ListGroupItem>
-                  <ListGroupItem>24/7 Support</ListGroupItem>
-                </ListGroup>
-                <div className="card-prices">
-                  <h3 className="text-on-front">
-                    <span>$</span>
-                    95
-                  </h3>
-                  <h5 className="text-on-back">95</h5>
-                  <p className="plan">Professional plan</p>
-                </div>
-              </CardBody>
-              <CardFooter className="text-center mb-3 mt-3">
-                <Button className="btn-round btn-just-icon" color="primary">
-                  Get started
-                </Button>
-              </CardFooter>
-            </Card>
-          </Col>
-          <Col lg="3" md="6">
-            <Card className="card-pricing card-primary">
-              <CardBody>
-                <CardTitle tag="h1">pro</CardTitle>
-                <CardImg
-                  alt="..."
-                  src={require("assets/img/card-primary.png").default}
-                />
-                <ListGroup>
-                  <ListGroupItem>300 messages</ListGroupItem>
-                  <ListGroupItem>150 emails</ListGroupItem>
-                  <ListGroupItem>24/7 Support</ListGroupItem>
-                </ListGroup>
-                <div className="card-prices">
-                  <h3 className="text-on-front">
-                    <span>$</span>
-                    95
-                  </h3>
-                  <h5 className="text-on-back">95</h5>
-                  <p className="plan">Professional plan</p>
-                </div>
-              </CardBody>
-              <CardFooter className="text-center mb-3 mt-3">
-                <Button className="btn-round btn-just-icon" color="primary">
-                  Get started
-                </Button>
-              </CardFooter>
-            </Card>
-          </Col>
-          <Col md="6">
-            <Card className="card-testimonial">
-              <CardHeader className="card-header-avatar">
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  <img
-                    alt="..."
-                    className="img img-raised"
-                    src={require("assets/img/james.jpg").default}
-                  />
-                </a>
-              </CardHeader>
-              <CardBody>
-                <p className="card-description">
-                  The networking at Web Summit is like no other European tech
-                  conference.
-                </p>
-                <div className="icon icon-primary">
-                  <i className="fa fa-quote-right" />
-                </div>
-              </CardBody>
-              <CardFooter>
-                <CardTitle tag="h4">Robert Priscen</CardTitle>
-                <p className="category">@robertpriscen</p>
-              </CardFooter>
-            </Card>
-          </Col>
-        </Row>
+      <div className="rna-container">
+        <NotificationAlert ref={notificationAlertRef} />
       </div>
+      <LoadingOverlay
+        active={isLoading}
+        spinner
+        text="Fetching..."
+        styles={{
+          wrapper: {
+            width: "100%",
+            height: "100%",
+          },
+        }}
+        className="content"
+      >
+        <div className="content full-page col-lg-12">
+          <blockquote className="blockquote text-center">
+            <h1 className="mb-2">SaaS Analyzer</h1>
+            <h3 className="mb-0">SEC Filing Analyzer for SaaS Companies</h3>
+          </blockquote>
+          <div className="">{isFetched ? companyDataElement : searchForm}</div>
+        </div>
+      </LoadingOverlay>
     </>
   );
 };
 
-export default Widgets;
+export default Dashboard;

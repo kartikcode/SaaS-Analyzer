@@ -220,6 +220,7 @@ const Dashboard = () => {
   };
   const setTimeSeriesData = async () => {
     const timeSeriesData = await getTimeSeriesByTicker(ticker);
+    console.log(timeSeriesData);
     setTimeSeriesApiData(timeSeriesData);
   };
 
@@ -397,7 +398,9 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="LTV:CAC Ratio"
-            mainValue={timeSeriesApiData?.ltvcac}
+            mainValue={
+              Math.round(parseFloat(timeSeriesApiData?.ltvcac) * 100000) / 100
+            }
             byLine="For the latest quarter"
             isVisible
           />
@@ -468,16 +471,36 @@ const Dashboard = () => {
       </Card>
       <Row>
         <Col>
-          <NumberCard label="EPS" mainValue={overviewApiData?.eps} byLine="" isVisible />
+          <NumberCard
+            label="EPS"
+            mainValue={overviewApiData?.eps}
+            byLine=""
+            isVisible
+          />
         </Col>
         <Col>
-          <NumberCard label="Profit Margin" mainValue={overviewApiData?.profitmargin} byLine="" isVisible />
+          <NumberCard
+            label="Profit Margin"
+            mainValue={overviewApiData?.profitmargin}
+            byLine=""
+            isVisible
+          />
         </Col>
         <Col>
-          <NumberCard label="Operating margin" mainValue={overviewApiData?.operatingmarginttm} byLine="" isVisible />
+          <NumberCard
+            label="Operating margin"
+            mainValue={overviewApiData?.operatingmarginttm}
+            byLine=""
+            isVisible
+          />
         </Col>
         <Col>
-          <NumberCard label="P/E" mainValue={overviewApiData?.pe} byLine="" isVisible />
+          <NumberCard
+            label="P/E"
+            mainValue={overviewApiData?.pe}
+            byLine=""
+            isVisible
+          />
         </Col>
       </Row>
     </div>
@@ -626,6 +649,22 @@ const Dashboard = () => {
             )}
             isVisible={multipleSelect.some(
               (selection) => selection.value === timeseriesChartLabels[4].value
+            )}
+          />
+        </Col>
+        <Col>
+          <ChartCard
+            type="line"
+            label={timeseriesChartLabels[5].label}
+            mainValue=""
+            chartObject={chartData(
+              timeSeriesApiData.quarTS,
+              timeSeriesApiData.ltvTS,
+              start,
+              end
+            )}
+            isVisible={multipleSelect.some(
+              (selection) => selection.value === timeseriesChartLabels[5].value
             )}
           />
         </Col>
@@ -836,7 +875,7 @@ const Dashboard = () => {
       >
         <div className="content full-page col-lg-12">
           <blockquote className="blockquote text-center">
-            <h1 className="mb-2">SEFASSC</h1>
+            <h1 className="mb-2">SaaS Analyzer</h1>
             <h3 className="mb-0">SEC Filing Analyzer for SaaS Companies</h3>
           </blockquote>
           <div className="">{isFetched ? companyDataElement : searchForm}</div>
