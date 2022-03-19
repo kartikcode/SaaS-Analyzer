@@ -45,7 +45,18 @@ const Charts = () => {
     };
     notificationAlertRef.current.notificationAlert(options);
   };
-
+  const downloadFile = async (data) => {
+    const fileName = "masterData";
+    const json = JSON.stringify(data);
+    const blob = new Blob([json], { type: "application/json" });
+    const href = await URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = fileName + ".json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   const handleSearch = async (from, to) => {
     setIsLoading(true);
     const fromd =
@@ -67,6 +78,8 @@ const Charts = () => {
       to: tod,
     };
     const response = await getMasterByTicker(data);
+    downloadFile(response);
+    setIsLoading(false);
   };
   return (
     <>
