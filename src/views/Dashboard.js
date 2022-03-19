@@ -173,7 +173,10 @@ const Dashboard = () => {
   const refToConvertTab = React.createRef();
   const [companyApiData, setCompanyApiData] = useState({});
   const [overviewApiData, setOverviewApiData] = useState({});
-  const [sentimentApiData, setSentimentApiData] = useState(null);
+  const [sentimentApiData, setSentimentApiData] = useState({
+    finbSenti: {},
+    dictSenti: {},
+  });
   const [openedCollapseOne, setOpenedCollapseOne] = useState(false);
   const [ticker, setTicker] = useState("");
   const [start, setStart] = useState(0);
@@ -217,7 +220,11 @@ const Dashboard = () => {
 
   const setSentimentData = async () => {
     const sentimentData = await getSentimentByTicker(ticker);
-    if (sentimentData.dictSenti === "") setSentimentData(null);
+    if (sentimentData.dictSenti === "")
+      setSentimentData({
+        finbSenti: {},
+        dictSenti: {},
+      });
     else setSentimentApiData(sentimentData);
   };
 
@@ -356,7 +363,13 @@ const Dashboard = () => {
                     <h5>Provider</h5>
                   </Col>
                 </Row>
-                {/* {Boolean(sentimentApiData) && sentimentElement} */}
+                {/* {Object.keys(sentimentApiData?.finbSenti).map((key, index) => {
+                  return (
+                    <Row>
+                      <Col>{key?.toUpperCase()}</Col>
+                    </Row>
+                  );
+                })} */}
               </CardBody>
             </Card>
           </Col>
@@ -371,21 +384,24 @@ const Dashboard = () => {
           </Col>
         </Row>
         <Row>
-          {tagsinput.map((item) => {
-            return (
-              <span
-                style={{
-                  color: "black",
-                  backgroundColor: "white",
-                  borderRadius: "10px",
-                  fontSize: "60%",
-                  verticalAlign: "middle",
-                }}
-              >
-                {item}
-              </span>
-            );
-          })}
+          <CardBody style={{ paddingLeft: 30 }}>
+            {tagsinput?.map((item) => {
+              return (
+                <span
+                  style={{
+                    color: "black",
+                    backgroundColor: "white",
+                    borderRadius: "2px",
+                    verticalAlign: "middle",
+                    marginRight: "5px",
+                    padding: "2px",
+                  }}
+                >
+                  {item.toUpperCase()}
+                </span>
+              );
+            })}
+          </CardBody>
         </Row>
       </Card>
     </div>
