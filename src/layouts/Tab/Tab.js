@@ -6,6 +6,7 @@ import {
   CardBody,
   CardTitle,
   Row,
+  Collapse,
   Col,
   Nav,
   NavItem,
@@ -178,6 +179,7 @@ const TabLayout = () => {
   const [end, setEnd] = useState(100);
   const [fromFillingDate, setFromFillingDate] = useState("");
   const [toFillingDate, setToFillingDate] = useState("");
+  const [openedCollapseOne, setOpenedCollapseOne] = useState(false);
   const refToConvertFull = React.createRef();
   const refToConvertTab = React.createRef();
 
@@ -393,6 +395,71 @@ const TabLayout = () => {
               (selection) => selection.value === multipleSelectValues[4].value
             )}
           />
+        </Col>
+        <Col>
+          <Card className="col">
+            <CardHeader>
+              <h5 className="card-category">Link to respective Fillings</h5>
+              <CardTitle tag="h3">Data source</CardTitle>
+            </CardHeader>
+            <div
+              aria-multiselectable={true}
+              className="card-collapse"
+              id="accordion"
+              role="tablist"
+            >
+              <Card className="card-plain">
+                <CardHeader role="tab">
+                  <a
+                    aria-expanded={openedCollapseOne}
+                    href="#pablo"
+                    data-parent="#accordion"
+                    data-toggle="collapse"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpenedCollapseOne(!openedCollapseOne);
+                    }}
+                  >
+                    Filling wise references
+                    <i className="tim-icons icon-minimal-down" />
+                  </a>
+                </CardHeader>
+                <Collapse
+                  role="tabpanel"
+                  isOpen={openedCollapseOne}
+                  className="text-center text-muted"
+                >
+                  <Row>
+                    <Col>
+                      <h4>Filling Date</h4>
+                    </Col>
+                    <Col>
+                      <h4>Link to Filling</h4>
+                    </Col>
+                  </Row>
+                  {Boolean(timeSeriesApiData.srcTS) &&
+                    timeSeriesApiData.srcTS.map((item, i) => {
+                      return (
+                        <Row key={i}>
+                          <Col>
+                            <h5>{timeSeriesApiData.quarTS[i]}</h5>
+                          </Col>
+                          <Col>
+                            <a
+                              href={item}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Link to Filling
+                            </a>
+                          </Col>
+                        </Row>
+                      );
+                    })}
+                </Collapse>
+              </Card>
+            </div>
+          </Card>
         </Col>
       </Row>
     </div>
