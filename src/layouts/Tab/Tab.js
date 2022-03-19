@@ -130,7 +130,6 @@ const chartData = (fillingdates, data, start, end) => {
 
 const TabLayout = () => {
   const companyName = localStorage.getItem("companyName");
-  console.log("companyName", companyName);
 
   const multipleSelectValues = [
     { value: "ARR", label: "Annual Recurring Revenue (ARR)" },
@@ -187,15 +186,17 @@ const TabLayout = () => {
     let startbool = false;
     let endbool = false;
     fillingdates.forEach((date, i) => {
-      if (startbool && Date(date) > Date(to)) {
+      if (startbool && !endbool && Date.parse(date) >= Date.parse(to)) {
         setEnd(i);
         endbool = true;
-      } else if (!startbool && Date(date) < Date(from)) {
+      } else if (!startbool && Date.parse(date) >= Date.parse(from)) {
         startbool = true;
         setStart(i);
       }
     });
-    if (!(endbool && startbool)) alert("No Filling in this period");
+
+    if (!startbool) alert("No Filling in this period");
+    if (!endbool) setEnd(500);
   };
 
   React.useEffect(() => {
@@ -351,7 +352,7 @@ const TabLayout = () => {
             label={multipleSelectValues[2].label}
             mainValue={companyApiData.Customers}
             chartObject={chartData(
-              timeSeriesApiData.nrrTS,
+              timeSeriesApiData.quarTS,
               timeSeriesApiData.custTS,
               start,
               end
