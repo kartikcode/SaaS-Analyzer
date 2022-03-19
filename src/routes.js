@@ -61,14 +61,14 @@ const routes = [
   },
   {
     path: "/extract",
-    name: "Extract",
+    name: "Export Data",
     icon: "tim-icons icon-chart-bar-32",
     component: Extract,
     layout: "/saas",
   },
   {
-    path: "/Documentation",
-    name: "Documentaion",
+    path: "/usermannual",
+    name: "User Mannual",
     icon: "tim-icons icon-time-alarm",
     component: Calendar,
     layout: "/saas",
