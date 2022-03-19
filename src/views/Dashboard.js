@@ -39,6 +39,7 @@ import ChartCard from "components/Charts/ChartCard";
 import NumberCard from "components/NumberCards/NumberCards";
 import NotificationAlert from "react-notification-alert";
 import PrintBtn from "components/PrintBtn/PrintBtn";
+import TagsInput from "components/TagsInput/TagsInput.js";
 import Select from "react-select";
 import ReactDatetime from "react-datetime";
 import {
@@ -50,6 +51,8 @@ import {
   getCompanyByName,
   getOverviewByTicker,
   getTimeSeriesByTicker,
+  getSentimentByTicker,
+  getTwitByTicker,
 } from "api/callbacks.js";
 
 const customStyles = {
@@ -170,6 +173,7 @@ const Dashboard = () => {
   const refToConvertTab = React.createRef();
   const [companyApiData, setCompanyApiData] = useState({});
   const [overviewApiData, setOverviewApiData] = useState({});
+  const [sentimentApiData, setSentimentApiData] = useState(null);
   const [openedCollapseOne, setOpenedCollapseOne] = useState(false);
   const [ticker, setTicker] = useState("");
   const [start, setStart] = useState(0);
@@ -177,14 +181,18 @@ const Dashboard = () => {
   const [fromFillingDate, setFromFillingDate] = useState("");
   const [toFillingDate, setToFillingDate] = useState("");
   const [multipleSelect, setMultipleSelect] = useState(timeseriesChartLabels);
+  const [tagsinput, setTagsinput] = useState(["twitter", "trends"]);
+  const [sentimentElement, setSentimentElement] = useState(<></>);
   const [timeSeriesApiData, setTimeSeriesApiData] = useState({
-    quarTS: [],
-    arrTS: [],
-    custTS: [],
-    empTS: [],
-    nrrTS: [],
-    smTS: [],
-    srcTS: [],
+    quarTS: [1],
+    arrTS: [1],
+    custTS: [1],
+    empTS: [1],
+    nrrTS: [1],
+    smTS: [1],
+    srcTS: [1],
+    pbTS: [1],
+    icacTS: [1],
   });
 
   const sendAlertNotification = async (message) => {
@@ -207,10 +215,24 @@ const Dashboard = () => {
     setTimeSeriesApiData(timeSeriesData);
   };
 
+  const setSentimentData = async () => {
+    const sentimentData = await getSentimentByTicker(ticker);
+    if (sentimentData.dictSenti === "") setSentimentData(null);
+    else setSentimentApiData(sentimentData);
+  };
+
+  const settwitterdata = async () => {
+    const twitdata = await getTwitByTicker(ticker);
+    console.log(twitdata.trendingWords);
+    setTagsinput(twitdata.trendingWords);
+  };
+
   useEffect(() => {
     if (ticker !== "") {
       setOverviewData();
       setTimeSeriesData();
+      setSentimentData();
+      settwitterdata();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker]);
@@ -219,6 +241,8 @@ const Dashboard = () => {
     async function setValues() {
       setOverviewData();
       setTimeSeriesData();
+      setSentimentData();
+      settwitterdata();
     }
     setIsLoading(true);
     if (companyName.value.length === 0) {
@@ -232,6 +256,10 @@ const Dashboard = () => {
     await setValues();
     setIsLoading(false);
     setIsFetched(true);
+  };
+
+  const handleTagsinput = (tagsinput) => {
+    setTagsinput(tagsinput);
   };
 
   const filterDatapoints = (from, to) => {
@@ -306,32 +334,60 @@ const Dashboard = () => {
           />
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <Card>
+      {Boolean(sentimentApiData) && (
+        <Row>
+          <Col>
+            <Card>
+              <CardHeader>
+                <CardTitle tag="h3">
+                  <i className="tim-icons icon-bulb-63" />
+                  Sentiments
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <Row>
+                  <Col>
+                    <h5>Sentiment</h5>
+                  </Col>
+                  <Col>
+                    <h5>Probabality</h5>
+                  </Col>
+                  <Col>
+                    <h5>Provider</h5>
+                  </Col>
+                </Row>
+                {/* {Boolean(sentimentApiData) && sentimentElement} */}
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      )}
+      <Card>
+        <Row>
+          <Col>
             <CardHeader>
-              <CardTitle tag="h3">
-                <i className="tim-icons icon-bulb-63" />
-                Sentiment by Bert
-              </CardTitle>
+              <CardTitle tag="h3">Twitter trends Tags</CardTitle>
             </CardHeader>
-            <CardBody>
-              <Row>
-                <Col>
-                  <h5>Sentiment</h5>
-                </Col>
-                <Col>
-                  <h5>Probabality</h5>
-                </Col>
-                <Col>
-                  <h5>Provider</h5>
-                </Col>
-              </Row>
-              
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+          </Col>
+        </Row>
+        <Row>
+          {tagsinput.map((item) => {
+            return (
+              <span
+                style={{
+                  color: "black",
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  fontSize: "60%",
+                  verticalAlign: "middle",
+                }}
+              >
+                {item}
+              </span>
+            );
+          })}
+        </Row>
+      </Card>
     </div>
   );
 
@@ -456,7 +512,7 @@ const Dashboard = () => {
             mainValue=""
             chartObject={chartData(
               timeSeriesApiData.quarTS,
-              timeSeriesApiData.smTS,
+              timeSeriesApiData.pbTS,
               start,
               end
             )}
@@ -472,7 +528,7 @@ const Dashboard = () => {
             mainValue=""
             chartObject={chartData(
               timeSeriesApiData.quarTS,
-              timeSeriesApiData.empTS,
+              timeSeriesApiData.icacTS,
               start,
               end
             )}

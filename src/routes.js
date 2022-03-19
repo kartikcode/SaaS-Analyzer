@@ -45,7 +45,7 @@ import Lock from "views/pages/Lock.js";
 
 const routes = [
   {
-    path: "/",
+    path: "/search",
     name: "Search",
     key: +new Date(),
     icon: "tim-icons icon-zoom-split",

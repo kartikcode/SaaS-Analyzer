@@ -19,13 +19,11 @@ const getCompanyByTicker = async (ticker) => {
 
 const getCompanyByCik = async (cik) => {
   const response = await axios.post(`${BASE_URL}/companybycik`, { cik });
-  console.log(response);
   return response.data;
 };
 
 const getOverviewByTicker = async (ticker) => {
   const response = await axios.post(`${BASE_URL}/overviewbyticker`, { ticker });
-  console.log(response);
   return response.data;
 };
 
@@ -38,6 +36,17 @@ const getQnaByTicker = async (ticker) => {
   const response = await axios.post(`${BASE_URL}/qnabyticker`, { ticker });
   return response.data;
 };
+
+const getSentimentByTicker = async (ticker) => {
+  const response = await axios.post(`${BASE_URL}/sentibyticker`, { ticker });
+  return response.data;
+};
+
+const getTwitByTicker = async (ticker) => {
+  const response = await axios.post(`${BASE_URL}/twitbyticker`, { ticker });
+  return response.data;
+};
+
 export {
   root,
   getCompanyByName,
@@ -46,4 +55,6 @@ export {
   getOverviewByTicker,
   getTimeSeriesByTicker,
   getQnaByTicker,
+  getSentimentByTicker,
+  getTwitByTicker,
 };
