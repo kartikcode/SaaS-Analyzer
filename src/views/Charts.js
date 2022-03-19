@@ -27,7 +27,7 @@ import NotificationAlert from "react-notification-alert";
 import { searchOptions } from "variables/companies";
 import Select from "react-select";
 import ReactDatetime from "react-datetime";
-
+import { getMasterByTicker } from "api/callbacks";
 const Charts = () => {
   const notificationAlertRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +48,25 @@ const Charts = () => {
 
   const handleSearch = async (from, to) => {
     setIsLoading(true);
+    const fromd =
+      from._d.getFullYear() +
+      "-" +
+      (from._d.getMonth() + 1) +
+      "-" +
+      from._d.getDate();
+    const tod =
+      to._d.getFullYear() +
+      "-" +
+      (to._d.getMonth() + 1) +
+      "-" +
+      to._d.getDate();
+    const tickerarr = multipleSelect.map((item) => item.value);
+    const data = {
+      tickers: tickerarr,
+      from: fromd,
+      to: tod,
+    };
+    const response = await getMasterByTicker(data);
   };
   return (
     <>
@@ -130,7 +149,7 @@ const Charts = () => {
                           else sendAlertNotification("Invalid dates");
                         }}
                       >
-                        Filter by Filling Date
+                        Generate Json
                       </Button>
                     </FormGroup>
                   </Col>

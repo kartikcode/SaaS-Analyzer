@@ -47,6 +47,11 @@ const getTwitByTicker = async (ticker) => {
   return response.data;
 };
 
+const getMasterByTicker = async (data) => {
+  const response = await axios.post(`${BASE_URL}/masterbytickers`, {...data});
+  return response.data;
+};
+
 export {
   root,
   getCompanyByName,
@@ -57,4 +62,5 @@ export {
   getQnaByTicker,
   getSentimentByTicker,
   getTwitByTicker,
+  getMasterByTicker,
 };

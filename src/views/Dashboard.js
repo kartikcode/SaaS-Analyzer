@@ -220,14 +220,13 @@ const Dashboard = () => {
   };
   const setTimeSeriesData = async () => {
     const timeSeriesData = await getTimeSeriesByTicker(ticker);
-    console.log(timeSeriesData);
     setTimeSeriesApiData(timeSeriesData);
   };
 
   const setSentimentData = async () => {
     const sentimentData = await getSentimentByTicker(ticker);
     if (sentimentData.dictSenti === "")
-      setSentimentData({
+      setSentimentApiData({
         finbSenti: {},
         dictSenti: {},
       });
@@ -236,15 +235,14 @@ const Dashboard = () => {
 
   const settwitterdata = async () => {
     const twitdata = await getTwitByTicker(ticker);
-    console.log(twitdata.trendingWords);
     setTagsinput(twitdata.trendingWords);
   };
 
-  const setqnadata = async () =>{
+  const setqnadata = async () => {
     const qnadata = await getQnaByTicker(ticker);
     setLists(qnadata.qna);
     setSummary(qnadata.summary);
-}
+  };
 
   useEffect(() => {
     if (ticker !== "") {
@@ -262,7 +260,7 @@ const Dashboard = () => {
       setIsOpen(null);
     } else {
       setIsOpen(id);
-    };
+    }
   };
 
   const handleOnClickSearch = async () => {
@@ -333,7 +331,7 @@ const Dashboard = () => {
   );
   const overviewPane = (
     <div ref={refToConvertTab}>
-      <h4 className="h5 text-light text-center">
+      <h4 className="h4 text-light text-center">
         {overviewApiData.description}
       </h4>
       <Row>
@@ -406,39 +404,158 @@ const Dashboard = () => {
           />
         </Col>
       </Row>
-      {Boolean(sentimentApiData) && (
-        <Row>
-          <Col>
-            <Card>
-              <CardHeader>
-                <CardTitle tag="h3">
-                  <i className="tim-icons icon-bulb-63" />
-                  Sentiments
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <Row>
-                  <Col>
-                    <h5>Sentiment</h5>
-                  </Col>
-                  <Col>
-                    <h5>Probabality</h5>
-                  </Col>
-                  <Col>
-                    <h5>Provider</h5>
-                  </Col>
-                </Row>
-                {/* {Object.keys(sentimentApiData?.finbSenti).map((key, index) => {
-                  return (
-                    <Row>
-                      <Col>{key?.toUpperCase()}</Col>
-                    </Row>
-                  );
-                })} */}
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+      {Boolean(sentimentApiData?.dictSenti !== "") && (
+        <>
+          <Row>
+            <Col>
+              <Card>
+                <CardHeader>
+                  <CardTitle tag="h3">Sentiments using FinBERT</CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <Row>
+                    <Col>
+                      <h5>Sentiment</h5>
+                    </Col>
+                    <Col>
+                      <h5>Probabality</h5>
+                    </Col>
+                    <Col>
+                      <h5>Sentiment</h5>
+                    </Col>
+                    <Col>
+                      <h5>Probabality</h5>
+                    </Col>
+                    <Col>
+                      <h5>Sentiment</h5>
+                    </Col>
+                    <Col>
+                      <h5>Probabality</h5>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <b>Positive</b>
+                    </Col>
+                    <Col>
+                      {Math.round(
+                        sentimentApiData?.finbSenti?.positive * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                    <Col>
+                      <b>Negative</b>
+                    </Col>
+                    <Col>
+                      {Math.round(
+                        sentimentApiData?.finbSenti?.negative * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                    <Col>
+                      <b>Neutral</b>
+                    </Col>
+                    <Col>
+                      {Math.round(sentimentApiData?.finbSenti?.neutral * 1000) /
+                        1000 || "--"}
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Card>
+                <CardHeader>
+                  <CardTitle tag="h3">Sentiments using Wordlist</CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <Row>
+                    <Col>
+                      <h5>Sentiment</h5>
+                    </Col>
+                    <Col>
+                      <h5>Probabality</h5>
+                    </Col>
+                    <Col>
+                      <h5>Sentiment</h5>
+                    </Col>
+                    <Col>
+                      <h5>Probabality</h5>
+                    </Col>
+                    <Col>
+                      <h5>Sentiment</h5>
+                    </Col>
+                    <Col>
+                      <h5>Probabality</h5>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <b>Positive</b>
+                    </Col>
+                    <Col>
+                      {Math.round(
+                        sentimentApiData?.dictSenti?.Positive * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                    <Col>
+                      <b>Negative</b>
+                    </Col>
+                    <Col>
+                      {Math.round(
+                        sentimentApiData?.dictSenti?.Negative * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                    <Col>
+                      <b>Uncertainty</b>
+                    </Col>
+                    <Col>
+                      {Math.round(
+                        sentimentApiData?.dictSenti?.Uncertainty * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <b>Constraining</b>
+                    </Col>
+                    <Col>
+                      {Math.round(
+                        sentimentApiData?.dictSenti?.Constraining * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                    <Col>
+                      <b>Litigious</b>
+                    </Col>
+                    <Col>
+                      {Math.round(
+                        sentimentApiData?.dictSenti?.Litigious * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                    <Col>
+                      <b>Weak modal</b>
+                    </Col>
+                    <Col>
+                      {Math.round(
+                        sentimentApiData?.dictSenti?.Weak_Modal * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="col-md-2">
+                      <b>Strong modal</b>
+                    </Col>
+                    <Col className="col-md-2">
+                      {Math.round(
+                        sentimentApiData?.dictSenti?.Strong_Modal * 1000
+                      ) / 1000 || "--"}
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </>
       )}
       <Card>
         <Row>
@@ -497,7 +614,9 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="P/E"
-            mainValue={overviewApiData?.pe}
+            mainValue={
+              overviewApiData?.pe === "None" ? "--" : overviewApiData?.pe
+            }
             byLine=""
             isVisible
           />
@@ -821,31 +940,33 @@ const Dashboard = () => {
                     <TabPane tabId={1}>{overviewPane}</TabPane>
                     <TabPane tabId={2}>{metricsPane}</TabPane>
                     <TabPane tabId={3}>
-                    <div
-                      aria-multiselectable={true}
-                      className="card-collapse"
-                      id="accordion"
-                      role="tablist"
-                    >
-                      {lists.map((list) => (
-                        <Card key={lists.indexOf(list)}>
-                          <CardHeader onClick={() => handleToggle(lists.indexOf(list))}>
-                            <h4>{list.question}</h4>
-                          </CardHeader>
-                          <Collapse isOpen={isOpen === lists.indexOf(list)}>
-                            <CardBody>
-                              <p>{list.answer}</p>
-                            </CardBody>
-                          </Collapse>
-                        </Card>
-                      ))}
-                    </div>
+                      <div
+                        aria-multiselectable={true}
+                        className="card-collapse"
+                        id="accordion"
+                        role="tablist"
+                      >
+                        {lists.map((list) => (
+                          <Card key={lists.indexOf(list)}>
+                            <CardHeader
+                              onClick={() => handleToggle(lists.indexOf(list))}
+                            >
+                              <h4>{list.question}</h4>
+                            </CardHeader>
+                            <Collapse isOpen={isOpen === lists.indexOf(list)}>
+                              <CardBody>
+                                <p>{list.answer}</p>
+                              </CardBody>
+                            </Collapse>
+                          </Card>
+                        ))}
+                      </div>
                     </TabPane>
                     <TabPane tabId={4}>
-                    <div ref={refToConvertSummary}>
-                      <PrintBtn refToConvert={refToConvertSummary} />
-                      {summary}
-                    </div>
+                      <div ref={refToConvertSummary}>
+                        <PrintBtn refToConvert={refToConvertSummary} />
+                        {summary}
+                      </div>
                     </TabPane>
                   </TabContent>
                 </CardBody>
