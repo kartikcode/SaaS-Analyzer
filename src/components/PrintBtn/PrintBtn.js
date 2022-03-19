@@ -4,13 +4,15 @@ import ReactToPrint from "react-to-print";
 
 const PrintBtn = ({ refToConvert }) => {
   return (
-    <div className="container-fluid">
-      <ReactToPrint
-        trigger={() => <Button className="btn-sm float-right"><i className="tim-icons icon-paper"></i> </Button>}
-        content={() => refToConvert.current}
-        copyStyles
-        />
-    </div>
+    <ReactToPrint
+      trigger={() => (
+        <Button className="btn-md float-right">
+          <i className="tim-icons icon-paper"></i>{"  "}Print
+        </Button>
+      )}
+      content={() => refToConvert.current}
+      copyStyles
+    />
   );
 };
 

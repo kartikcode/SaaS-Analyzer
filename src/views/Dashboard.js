@@ -224,7 +224,7 @@ const Dashboard = () => {
 
   const settwitterdata = async () => {
     const twitdata = await getTwitByTicker(ticker);
-    setTagsinput(twitdata.trendingWords);
+    setTagsinput(twitdata.trendingWords || []);
   };
 
   const setqnadata = async () => {
@@ -293,8 +293,6 @@ const Dashboard = () => {
     if (!endbool) setEnd(500);
   };
 
-  const refToConvertSummary = React.createRef();
-
   const searchForm = (
     <Card>
       <CardBody>
@@ -325,7 +323,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label={overviewDataLabels[0].label}
-            mainValue={companyApiData.ARR}
+            mainValue={companyApiData.ARR || "--"}
             byLine={overviewDataLabels[0].byLine}
             isVisible
           />
@@ -333,7 +331,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label={overviewDataLabels[1].label}
-            mainValue={companyApiData.NRR}
+            mainValue={companyApiData.NRR || "--"}
             byLine={overviewDataLabels[1].byLine}
             sentiment={
               parseFloat(companyApiData?.NRR) > 90
@@ -348,7 +346,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label={overviewDataLabels[2].label}
-            mainValue={companyApiData.Customers}
+            mainValue={companyApiData.Customers || "--"}
             byLine={overviewDataLabels[2].byLine}
             isVisible
           />
@@ -358,7 +356,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="Magic Number"
-            mainValue={timeSeriesApiData?.mg}
+            mainValue={timeSeriesApiData?.mg || "--"}
             byLine="For the latest quarter"
             isVisible
             sentiment={
@@ -373,7 +371,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="Payback period (months)"
-            mainValue={timeSeriesApiData?.pbTSlast}
+            mainValue={timeSeriesApiData?.pbTSlast || "--"}
             byLine="For the latest quarter"
             isVisible
             sentiment={
@@ -386,7 +384,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="CAC Ratio"
-            mainValue={timeSeriesApiData?.cac}
+            mainValue={timeSeriesApiData?.cac || "--"}
             byLine="For the latest quarter"
             isVisible
           />
@@ -394,7 +392,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="LTV:CAC Ratio"
-            mainValue={timeSeriesApiData?.ltvcac}
+            mainValue={timeSeriesApiData?.ltvcac || "--"}
             byLine="For the latest quarter"
             isVisible
             sentiment={
@@ -570,22 +568,24 @@ const Dashboard = () => {
         </Row>
         <Row>
           <CardBody style={{ paddingLeft: 30 }}>
-            {tagsinput?.map((item) => {
-              return (
-                <span
-                  style={{
-                    color: "black",
-                    backgroundColor: "white",
-                    borderRadius: "2px",
-                    verticalAlign: "middle",
-                    marginRight: "5px",
-                    padding: "2px",
-                  }}
-                >
-                  {item.toUpperCase()}
-                </span>
-              );
-            })}
+            {tagsinput.length === 0
+              ? "No Data Available"
+              : tagsinput?.map((item) => {
+                  return (
+                    <span
+                      style={{
+                        color: "black",
+                        backgroundColor: "white",
+                        borderRadius: "2px",
+                        verticalAlign: "middle",
+                        marginRight: "5px",
+                        padding: "2px",
+                      }}
+                    >
+                      {item.toUpperCase()}
+                    </span>
+                  );
+                })}
           </CardBody>
         </Row>
       </Card>
@@ -593,7 +593,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="EPS ($)"
-            mainValue={overviewApiData?.eps}
+            mainValue={overviewApiData?.eps || "--"}
             byLine=""
             isVisible
           />
@@ -602,7 +602,8 @@ const Dashboard = () => {
           <NumberCard
             label="Profit Margin"
             mainValue={
-              parseInt(overviewApiData?.profitmargin * 10000) / 100 + "%"
+              (parseInt(overviewApiData?.profitmargin * 10000) / 100 || "--") +
+              "%"
             }
             byLine=""
             isVisible
@@ -612,7 +613,8 @@ const Dashboard = () => {
           <NumberCard
             label="Operating margin"
             mainValue={
-              parseInt(overviewApiData?.operatingmarginttm * 10000) / 100 + "%"
+              (parseInt(overviewApiData?.operatingmarginttm * 10000) / 100 ||
+                "--") + "%"
             }
             byLine=""
             isVisible
@@ -622,7 +624,9 @@ const Dashboard = () => {
           <NumberCard
             label="P/E"
             mainValue={
-              overviewApiData?.pe === "None" ? "--" : overviewApiData?.pe
+              overviewApiData?.pe === "None"
+                ? "--"
+                : overviewApiData?.pe || "--"
             }
             byLine=""
             isVisible
@@ -904,9 +908,18 @@ const Dashboard = () => {
                       </span>
                     </h1>
                   </CardTitle>
-                  <div className="row">
-                    {/* <div className="flex bg-light mt-auto">{companyName}</div> */}
-                    <PrintBtn refToConvert={refToConvertFull} />
+                  <div>
+                    <Button
+                      onClick={() => {
+                        window.location.reload();
+                      }}
+                    >
+                      Search Again
+                    </Button>
+                    <PrintBtn
+                      className="col-md-6"
+                      refToConvert={refToConvertFull}
+                    />
                   </div>
                 </CardHeader>
                 <CardBody>
@@ -991,8 +1004,7 @@ const Dashboard = () => {
                       </div>
                     </TabPane>
                     <TabPane tabId={4}>
-                      <div ref={refToConvertSummary}>
-                        <PrintBtn refToConvert={refToConvertSummary} />
+                      <div>
                         <Card>
                           <CardHeader>
                             <CardTitle>Summary</CardTitle>
