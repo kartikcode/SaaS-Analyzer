@@ -1,19 +1,3 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
@@ -29,7 +13,7 @@ import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 
 import routes from "routes.js";
 
-import logo from "assets/img/react-logo.png";
+import logo from "assets/img/digitalalpha.png";
 
 var ps;
 
@@ -41,6 +25,7 @@ const Admin = (props) => {
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
+
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -48,6 +33,7 @@ const Admin = (props) => {
       mainPanelRef.current.scrollTop = 0;
     }
   }, [location]);
+
   React.useEffect(() => {
     let innerMainPanelRef = mainPanelRef;
     if (navigator.platform.indexOf("Win") > -1) {
@@ -62,6 +48,7 @@ const Admin = (props) => {
       }
     }
     window.addEventListener("scroll", showNavbarButton);
+    document.body.classList.remove("sidebar-mini");
     return function cleanup() {
       if (navigator.platform.indexOf("Win") > -1) {
         ps.destroy();
@@ -179,8 +166,8 @@ const Admin = (props) => {
         routes={routes}
         activeColor={activeColor}
         logo={{
-          outterLink: "https://www.creative-tim.com/",
-          text: "Creative Tim",
+          outterLink: "https://www.digitalalpha.net/",
+          text: "DigitalAlpha",
           imgSrc: logo,
         }}
         closeSidebar={closeSidebar}
@@ -188,14 +175,12 @@ const Admin = (props) => {
       <div className="main-panel" ref={mainPanelRef} data={activeColor}>
         <AdminNavbar
           {...props}
-          handleMiniClick={handleMiniClick}
           brandText={getActiveRoute(routes)}
-          sidebarOpened={sidebarOpened}
-          toggleSidebar={toggleSidebar}
+          sidebarOpened={true}
         />
         <Switch>
           {getRoutes(routes)}
-          <Redirect from="*" to="/admin/dashboard" />
+          <Redirect from="*" to="/admin/search" />
         </Switch>
         {
           // we don't want the Footer to be rendered on full screen maps page
@@ -204,12 +189,6 @@ const Admin = (props) => {
           )
         }
       </div>
-      <FixedPlugin
-        activeColor={activeColor}
-        sidebarMini={sidebarMini}
-        handleActiveClick={handleActiveClick}
-        handleMiniClick={handleMiniClick}
-      />
     </div>
   );
 };

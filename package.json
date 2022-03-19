@@ -1,8 +1,8 @@
 {
   "name": "sec-filing-analyzer-for-saas-companies",
   "version": "1.1.0",
+  "homepage": "/",
   "private": true,
-  "homepage": "https://demos.creative-tim.com/black-dashboard-pro-react/#/admin/dashboard",
   "dependencies": {
     "axios": "^0.26.1",
     "bootstrap": "4.5.3",
@@ -23,6 +23,7 @@
     "react-datetime": "3.0.4",
     "react-dom": "17.0.1",
     "react-jvectormap": "0.0.16",
+    "react-loading-overlay": "^1.0.1",
     "react-notification-alert": "0.0.13",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.1",
