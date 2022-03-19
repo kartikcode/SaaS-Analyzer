@@ -29,6 +29,7 @@ import {
   getCompanyByName,
   getOverviewByTicker,
   getTimeSeriesByTicker,
+  getQnaByTicker,
 } from "api/callbacks";
 
 const chartData = (fillingdates, data, start, end) => {
@@ -182,6 +183,11 @@ const TabLayout = () => {
   const [openedCollapseOne, setOpenedCollapseOne] = useState(false);
   const refToConvertFull = React.createRef();
   const refToConvertTab = React.createRef();
+ 
+  const [pageTabs, setpageTabs] = useState("1");
+  const [isOpen, setIsOpen] = useState(1);
+  const [lists, setLists] = useState([]);
+  const [summary, setSummary] = useState("");
 
   const filterDatapoints = (from, to) => {
     const fillingdates = timeSeriesApiData.quarTS;
@@ -210,9 +216,20 @@ const TabLayout = () => {
       setOverviewApiData(overviewResult);
       const timeSeriesData = await getTimeSeriesByTicker(ticker);
       setTimeSeriesApiData(timeSeriesData);
+      const qnadata = await getQnaByTicker(companyResult.ticker);
+      setLists(qnadata.qna);
+      setSummary(qnadata.summary);
     }
     setValues();
   }, [companyName, ticker]);
+
+  const handleToggle = (id) => {
+    if (isOpen === id) {
+      setIsOpen(null);
+    } else {
+      setIsOpen(id);
+    };
+  }
 
   const overviewPane = (
     <div ref={refToConvertTab}>
@@ -465,6 +482,7 @@ const TabLayout = () => {
     </div>
   );
 
+
   return (
     <>
       <div ref={refToConvertFull}>
@@ -515,6 +533,27 @@ const TabLayout = () => {
                   >
                     <TabPane tabId="overview">{overviewPane}</TabPane>
                     <TabPane tabId="metrics">{metricsPane}</TabPane>
+                    <TabPane tabId="qna">
+                    <div
+                      aria-multiselectable={true}
+                      className="card-collapse"
+                      id="accordion"
+                      role="tablist"
+                    >
+                      {lists.map((list) => (
+                        <Card key={lists.indexOf(list)}>
+                          <CardHeader onClick={() => handleToggle(lists.indexOf(list))}>
+                            <h4>{list.question}</h4>
+                          </CardHeader>
+                          <Collapse isOpen={isOpen === lists.indexOf(list)}>
+                            <CardBody>
+                              <p>{list.answer}</p>
+                            </CardBody>
+                          </Collapse>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabPane>
                   </TabContent>
                 </CardBody>
               </Card>
