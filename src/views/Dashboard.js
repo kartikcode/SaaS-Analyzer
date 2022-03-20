@@ -411,19 +411,19 @@ const Dashboard = () => {
                       <h5>Sentiment</h5>
                     </Col>
                     <Col>
-                      <h5>Probabality</h5>
+                      <h5>Proportion</h5>
                     </Col>
                     <Col>
                       <h5>Sentiment</h5>
                     </Col>
                     <Col>
-                      <h5>Probabality</h5>
+                      <h5>Proportion</h5>
                     </Col>
                     <Col>
                       <h5>Sentiment</h5>
                     </Col>
                     <Col>
-                      <h5>Probabality</h5>
+                      <h5>Proportion</h5>
                     </Col>
                   </Row>
                   <Row>
@@ -467,19 +467,19 @@ const Dashboard = () => {
                       <h5>Sentiment</h5>
                     </Col>
                     <Col>
-                      <h5>Probabality</h5>
+                      <h5>Proportion</h5>
                     </Col>
                     <Col>
                       <h5>Sentiment</h5>
                     </Col>
                     <Col>
-                      <h5>Probabality</h5>
+                      <h5>Proportion</h5>
                     </Col>
                     <Col>
                       <h5>Sentiment</h5>
                     </Col>
                     <Col>
-                      <h5>Probabality</h5>
+                      <h5>Proportion</h5>
                     </Col>
                   </Row>
                   <Row>
