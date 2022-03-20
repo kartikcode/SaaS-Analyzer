@@ -255,12 +255,6 @@ const Dashboard = () => {
   };
 
   const handleOnClickSearch = async () => {
-    async function setValues() {
-      setOverviewData();
-      setTimeSeriesData();
-      setOverviewDatB();
-      setTimeSeriesDatB();
-    }
     setIsLoading(true);
     if (companyNameA.value.length === 0 || companyNameB.value.length === 0) {
       sendAlertNotification("Please select company");
@@ -278,7 +272,6 @@ const Dashboard = () => {
     const companyResult = await getCompanyByName(companyNameB.label);
     setCompanyApiDataB(companyResult);
     setTickerB(companyResult.ticker);
-    await setValues();
     setIsLoading(false);
     setIsFetched(true);
   };
@@ -322,8 +315,6 @@ const Dashboard = () => {
     if (!startbool) alert("No Filling in this period");
     if (!endbool) setEndB(500);
   };
-
-  const refToConvertSummary = React.createRef();
 
   const searchForm = (
     <Card>
@@ -370,18 +361,16 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label={overviewDataLabels[0].label}
-            mainValue={companyApiDataA.ARR}
+            mainValue={companyApiDataA.ARR || "--"}
             byLine={overviewDataLabels[0].byLine}
-            sentiment="good"
             isVisible
           />
         </Col>
         <Col>
           <NumberCard
             label={overviewDataLabels[0].label}
-            mainValue={companyApiDataB.ARR}
+            mainValue={companyApiDataB.ARR || "--"}
             byLine={overviewDataLabels[0].byLine}
-            sentiment="good"
             isVisible
           />
         </Col>
@@ -390,18 +379,30 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label={overviewDataLabels[1].label}
-            mainValue={companyApiDataA.NRR}
+            mainValue={companyApiDataA.NRR || "--"}
             byLine={overviewDataLabels[1].byLine}
-            sentiment="bad"
+            sentiment={
+              parseFloat(companyApiDataA?.NRR) > 90
+                ? "good"
+                : parseFloat(companyApiDataA?.NRR) > 70
+                ? "neutral"
+                : "bad"
+            }
             isVisible
           />
         </Col>
         <Col>
           <NumberCard
             label={overviewDataLabels[1].label}
-            mainValue={companyApiDataB.NRR}
+            mainValue={companyApiDataB.NRR || "--"}
             byLine={overviewDataLabels[1].byLine}
-            sentiment="bad"
+            sentiment={
+              parseFloat(companyApiDataB?.NRR) > 90
+                ? "good"
+                : parseFloat(companyApiDataB?.NRR) > 70
+                ? "neutral"
+                : "bad"
+            }
             isVisible
           />
         </Col>
@@ -410,7 +411,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label={overviewDataLabels[2].label}
-            mainValue={companyApiDataA.Customers}
+            mainValue={companyApiDataA.Customers || "--"}
             byLine={overviewDataLabels[2].byLine}
             isVisible
           />
@@ -418,7 +419,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label={overviewDataLabels[2].label}
-            mainValue={companyApiDataB.Customers}
+            mainValue={companyApiDataB.Customers || "--"}
             byLine={overviewDataLabels[2].byLine}
             isVisible
           />
@@ -428,21 +429,31 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="Magic Number"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiDataA?.mg) * 100000) / 100
-            }
+            mainValue={timeSeriesApiDataA?.mg || "--"}
             byLine="For the latest quarter"
             isVisible
+            sentiment={
+              parseFloat(timeSeriesApiDataA?.mg) > 0.75
+                ? "good"
+                : parseFloat(timeSeriesApiDataA?.mg) > 0.5
+                ? "neutral"
+                : "bad"
+            }
           />
         </Col>
         <Col>
           <NumberCard
             label="Magic Number"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiDataB?.mg) * 100000) / 100
+            mainValue={timeSeriesApiDataB?.mg || "--"}
+            byLine="For the latest quarter"
+            isVisible
+            sentiment={
+              parseFloat(timeSeriesApiDataB?.mg) > 0.75
+                ? "good"
+                : parseFloat(timeSeriesApiDataB?.mg) > 0.5
+                ? "neutral"
+                : "bad"
             }
-            byLine="For the latest quarter"
-            isVisible
           />
         </Col>
       </Row>
@@ -450,35 +461,23 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="Payback period (months)"
-            mainValue={parseFloat(parseInt(timeSeriesApiDataA?.pbTSlast)) / 100}
+            mainValue={timeSeriesApiDataA?.pbTSlast || "--"}
             byLine="For the latest quarter"
             isVisible
+            sentiment={
+              parseInt(timeSeriesApiDataA?.pbTSlast) < 12 ? "good" : "bad"
+            }
           />
         </Col>
         <Col>
           <NumberCard
             label="Payback period (months)"
-            mainValue={parseFloat(parseInt(timeSeriesApiDataB?.pbTSlast)) / 100}
+            mainValue={timeSeriesApiDataB?.pbTSlast || "--"}
             byLine="For the latest quarter"
             isVisible
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <NumberCard
-            label="Payback period (months)"
-            mainValue={parseFloat(parseInt(timeSeriesApiDataA?.pbTSlast)) / 100}
-            byLine="For the latest quarter"
-            isVisible
-          />
-        </Col>
-        <Col>
-          <NumberCard
-            label="Payback period (months)"
-            mainValue={parseFloat(parseInt(timeSeriesApiDataB?.pbTSlast)) / 100}
-            byLine="For the latest quarter"
-            isVisible
+            sentiment={
+              parseInt(timeSeriesApiDataB?.pbTSlast) < 12 ? "good" : "bad"
+            }
           />
         </Col>
       </Row>
@@ -486,9 +485,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="CAC Ratio"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiDataA?.cac) * 100000) / 100
-            }
+            mainValue={timeSeriesApiDataA?.cac || "--"}
             byLine="For the latest quarter"
             isVisible
           />
@@ -496,9 +493,7 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="CAC Ratio"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiDataB?.cac) * 100000) / 100
-            }
+            mainValue={timeSeriesApiDataB?.cac || "--"}
             byLine="For the latest quarter"
             isVisible
           />
@@ -508,21 +503,31 @@ const Dashboard = () => {
         <Col>
           <NumberCard
             label="LTV:CAC Ratio"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiDataA?.ltvcac) * 100000) / 100
-            }
+            mainValue={timeSeriesApiDataA?.ltvcac || "--"}
             byLine="For the latest quarter"
             isVisible
+            sentiment={
+              parseFloat(timeSeriesApiDataA?.ltvcac) > 3
+                ? "good"
+                : parseFloat(timeSeriesApiDataA?.ltvcac) > 1
+                ? "neutral"
+                : "bad"
+            }
           />
         </Col>
         <Col>
           <NumberCard
             label="LTV:CAC Ratio"
-            mainValue={
-              Math.round(parseFloat(timeSeriesApiDataB?.ltvcac) * 100000) / 100
-            }
+            mainValue={timeSeriesApiDataB?.ltvcac || "--"}
             byLine="For the latest quarter"
             isVisible
+            sentiment={
+              parseFloat(timeSeriesApiDataB?.ltvcac) > 3
+                ? "good"
+                : parseFloat(timeSeriesApiDataB?.ltvcac) > 1
+                ? "neutral"
+                : "bad"
+            }
           />
         </Col>
       </Row>
@@ -853,9 +858,18 @@ const Dashboard = () => {
                       </span>
                     </h1>
                   </CardTitle>
-                  <div className="row">
-                    {/* <div className="flex bg-light mt-auto">{companyName}</div> */}
-                    <PrintBtn refToConvert={refToConvertFull} />
+                  <div>
+                    <Button
+                      onClick={() => {
+                        window.location.reload();
+                      }}
+                    >
+                      Compare Again
+                    </Button>
+                    <PrintBtn
+                      className="col-md-6"
+                      refToConvert={refToConvertFull}
+                    />
                   </div>
                 </CardHeader>
                 <CardBody>

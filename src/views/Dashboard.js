@@ -254,13 +254,6 @@ const Dashboard = () => {
   };
 
   const handleOnClickSearch = async () => {
-    async function setValues() {
-      setOverviewData();
-      setTimeSeriesData();
-      setSentimentData();
-      settwitterdata();
-      setSecData();
-    }
     setIsLoading(true);
     if (companyName.value.length === 0) {
       sendAlertNotification("Please select a company");
@@ -270,7 +263,6 @@ const Dashboard = () => {
     const companyResult = await getCompanyByName(companyName.label);
     setCompanyApiData(companyResult);
     setTicker(companyResult.ticker);
-    await setValues();
     setIsLoading(false);
     setIsFetched(true);
   };

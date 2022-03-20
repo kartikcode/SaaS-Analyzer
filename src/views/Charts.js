@@ -106,29 +106,34 @@ const Charts = () => {
           <div className="">
             <Card>
               <CardBody>
+                <FormGroup>
+                  <Row>
+                    <Col md="2">
+                      <h4 className="h4 text-white">Select Companies:</h4>
+                    </Col>
+                    <Col lg="10" md="10" sm="3">
+                      <Select
+                        className="react-select info"
+                        classNamePrefix="react-select"
+                        placeholder="Choose companies..."
+                        name="multipleSelect"
+                        closeMenuOnSelect={false}
+                        isMulti
+                        value={multipleSelect}
+                        onChange={(value) => {
+                          if (value == null) setMultipleSelect([]);
+                          else setMultipleSelect(value);
+                        }}
+                        options={searchOptions}
+                      />
+                    </Col>
+                  </Row>
+                </FormGroup>
                 <Row>
-                  <Col md="4">
-                    <h4 className="h4 text-white">Select what to display:</h4>
+                  <Col md="2">
+                    <h4 className="h4 text-white">Select Dates:</h4>
                   </Col>
-                  <Col lg="8" md="8" sm="3">
-                    <Select
-                      className="react-select info"
-                      classNamePrefix="react-select"
-                      placeholder="Choose companies..."
-                      name="multipleSelect"
-                      closeMenuOnSelect={false}
-                      isMulti
-                      value={multipleSelect}
-                      onChange={(value) => {
-                        if (value == null) setMultipleSelect([]);
-                        else setMultipleSelect(value);
-                      }}
-                      options={searchOptions}
-                    />
-                  </Col>
-                </Row>
-                <Row className="text-center">
-                  <Col md="4">
+                  <Col md="5">
                     <FormGroup>
                       <ReactDatetime
                         inputProps={{
@@ -140,7 +145,7 @@ const Charts = () => {
                       />
                     </FormGroup>
                   </Col>
-                  <Col md="4">
+                  <Col md="5">
                     <FormGroup>
                       <ReactDatetime
                         inputProps={{
@@ -152,7 +157,9 @@ const Charts = () => {
                       />
                     </FormGroup>
                   </Col>
-                  <Col md="4">
+                </Row>
+                <Row className="text-center">
+                  <Col md="12">
                     <FormGroup>
                       <Button
                         color="primary"
@@ -162,7 +169,7 @@ const Charts = () => {
                           else sendAlertNotification("Invalid dates");
                         }}
                       >
-                        Generate Json
+                        Download Data
                       </Button>
                     </FormGroup>
                   </Col>
