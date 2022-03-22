@@ -35,6 +35,8 @@ import {
   getTimeSeriesByTicker,
 } from "api/callbacks.js";
 
+import _ from 'underscore'
+
 const customStyles = {
   input: (provided) => ({
     ...provided,
@@ -42,13 +44,23 @@ const customStyles = {
   }),
 };
 
-const chartData = (fillingdates, data, start, end) => {
-  let max, min, label, datapoints;
+const chartData = (fillingdates, data, fillingdates1, data1, startA, endA, startB, endB) => {
+  let max, min, label, datapoints, datapoints1, toplot, toplot1;
   try {
-    max = Math.max(...data);
-    min = Math.min(...data);
-    label = fillingdates.slice(start, end);
-    datapoints = data.slice(start, end);
+    max = Math.max(...data, ...data1);
+    min = Math.min(...data, ...data1);
+    fillingdates = fillingdates.slice(startA, endA);
+    fillingdates1 = fillingdates1.slice(startB, endB);
+    label = _.union(fillingdates, fillingdates1);
+    label.sort()
+    datapoints = data.slice(startA, endA);
+    datapoints1 = data1.slice(startB, endB);
+    toplot = datapoints.map(function(t, i) {
+        return {x: fillingdates[i], y: t}
+    });
+    toplot1 = datapoints1.map(function(t, i) {
+        return {x: fillingdates1[i], y: t}
+    });
   } catch {
     max = 400;
     min = 0;
@@ -69,9 +81,8 @@ const chartData = (fillingdates, data, start, end) => {
         labels: label,
         datasets: [
           {
-            label: "Data",
-            fill: true,
-            backgroundColor: gradientStroke,
+            label: "Company A",
+            fill: false,
             borderColor: "#1f8ef1",
             borderWidth: 2,
             borderDash: [],
@@ -83,8 +94,23 @@ const chartData = (fillingdates, data, start, end) => {
             pointHoverRadius: 4,
             pointHoverBorderWidth: 15,
             pointRadius: 4,
-            data: datapoints,
-          },
+            data: toplot
+          },{
+            label: "Company B",
+            fill: false,
+            borderColor: "#DFFF00",
+            borderWidth: 2,
+            borderDash: [],
+            borderDashOffset: 0.0,
+            pointBackgroundColor: "#DFFF00",
+            pointBorderColor: "rgba(255,255,255,0)",
+            pointHoverBackgroundColor: "#DFFF00",
+            pointBorderWidth: 20,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 15,
+            pointRadius: 4,
+            data: toplot1
+          }
         ],
       };
     },
@@ -94,12 +120,18 @@ const chartData = (fillingdates, data, start, end) => {
         display: false,
       },
       tooltips: {
+        callbacks: {
+            title: function(tooltipItems, data) {
+                return data.datasets[tooltipItems[0].datasetIndex].data[tooltipItems[0].index].x;
+            }
+        },
         backgroundColor: "#f5f5f5",
         titleFontColor: "#333",
         bodyFontColor: "#666",
         bodySpacing: 4,
         xPadding: 12,
-        mode: "nearest",
+        mode: 'nearest',
+        axis: 'x',
         intersect: 0,
         position: "nearest",
       },
@@ -123,7 +155,6 @@ const chartData = (fillingdates, data, start, end) => {
         ],
         xAxes: [
           {
-            barPercentage: 1.6,
             gridLines: {
               drawBorder: false,
               color: "rgba(29,140,248,0.1)",
@@ -599,38 +630,18 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row>
-        <Col>
-          <b>{companyNameA.label}</b>
-        </Col>
-        <Col>
-          <b>{companyNameB.label}</b>
-        </Col>
-      </Row>
-      <Row>
-        <Col className="col-md-6">
+        <Col className="col-md-12">
           <ChartCard
             type="line"
             label={timeseriesChartLabels[0].label}
-            mainValue={companyApiDataA.ARR}
+            mainValue=""
             chartObject={chartData(
               timeSeriesApiDataA.quarTS,
               timeSeriesApiDataA.arrTS,
-              startA,
-              endA
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[0].value
-            )}
-          />
-        </Col>
-        <Col className="col-md-6">
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[0].label}
-            mainValue={companyApiDataB.ARR}
-            chartObject={chartData(
               timeSeriesApiDataB.quarTS,
               timeSeriesApiDataB.arrTS,
+              startA,
+              endA,
               startB,
               endB
             )}
@@ -641,30 +652,18 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row>
-        <Col className="col-md-6">
+        <Col className="col-md-12">
           <ChartCard
             type="line"
             label={timeseriesChartLabels[1].label}
-            mainValue={companyApiDataA.NRR}
+            mainValue=""
             chartObject={chartData(
               timeSeriesApiDataA.quarTS,
               timeSeriesApiDataA.nrrTS,
-              startA,
-              endA
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[1].value
-            )}
-          />
-        </Col>
-        <Col className="col-md-6">
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[1].label}
-            mainValue={companyApiDataB.NRR}
-            chartObject={chartData(
               timeSeriesApiDataB.quarTS,
               timeSeriesApiDataB.nrrTS,
+              startA,
+              endA,
               startB,
               endB
             )}
@@ -675,30 +674,18 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row>
-        <Col className="col-md-6">
+        <Col className="col-md-12">
           <ChartCard
             type="line"
             label={timeseriesChartLabels[2].label}
-            mainValue={companyApiDataA.Customers}
+            mainValue=""
             chartObject={chartData(
               timeSeriesApiDataA.quarTS,
               timeSeriesApiDataA.custTS,
-              startA,
-              endA
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[2].value
-            )}
-          />
-        </Col>
-        <Col className="col-md-6">
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[2].label}
-            mainValue={companyApiDataB.Customers}
-            chartObject={chartData(
               timeSeriesApiDataB.quarTS,
               timeSeriesApiDataB.custTS,
+              startA,
+              endA,
               startB,
               endB
             )}
@@ -709,7 +696,7 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row>
-        <Col className="col-md-6">
+        <Col className="col-md-12">
           <ChartCard
             type="line"
             label={timeseriesChartLabels[3].label}
@@ -717,6 +704,10 @@ const Dashboard = () => {
             chartObject={chartData(
               timeSeriesApiDataA.quarTS,
               timeSeriesApiDataA.pbTS,
+              timeSeriesApiDataB.quarTS,
+              timeSeriesApiDataB.pbTS,
+              startA,
+              endA,
               startA,
               endA
             )}
@@ -725,25 +716,9 @@ const Dashboard = () => {
             )}
           />
         </Col>
-        <Col className="col-md-6">
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[3].label}
-            mainValue=""
-            chartObject={chartData(
-              timeSeriesApiDataB.quarTS,
-              timeSeriesApiDataB.pbTS,
-              startB,
-              endB
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[3].value
-            )}
-          />
-        </Col>
       </Row>
       <Row>
-        <Col className="col-md-6">
+        <Col className="col-md-12">
           <ChartCard
             type="line"
             label={timeseriesChartLabels[4].label}
@@ -751,22 +726,10 @@ const Dashboard = () => {
             chartObject={chartData(
               timeSeriesApiDataA.quarTS,
               timeSeriesApiDataA.icacTS,
-              startA,
-              endA
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[4].value
-            )}
-          />
-        </Col>
-        <Col className="col-md-6">
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[4].label}
-            mainValue=""
-            chartObject={chartData(
               timeSeriesApiDataB.quarTS,
               timeSeriesApiDataB.icacTS,
+              startA,
+              endA,
               startB,
               endB
             )}
@@ -777,7 +740,7 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row>
-        <Col className="col-md-6">
+        <Col className="col-md-12">
           <ChartCard
             type="line"
             label={timeseriesChartLabels[5].label}
@@ -785,22 +748,10 @@ const Dashboard = () => {
             chartObject={chartData(
               timeSeriesApiDataA.quarTS,
               timeSeriesApiDataA.ltvTS,
-              startA,
-              endA
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[5].value
-            )}
-          />
-        </Col>
-        <Col className="col-md-6">
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[5].label}
-            mainValue=""
-            chartObject={chartData(
               timeSeriesApiDataB.quarTS,
               timeSeriesApiDataB.ltvTS,
+              startA,
+              endA,
               startB,
               endB
             )}
