@@ -629,7 +629,7 @@ const Dashboard = () => {
             label={timeseriesChartLabels[0].label}
             mainValue={companyApiDataB.ARR}
             chartObject={chartData(
-              timeSeriesApiDataB.quarTSB,
+              timeSeriesApiDataB.quarTS,
               timeSeriesApiDataB.arrTS,
               startB,
               endB
