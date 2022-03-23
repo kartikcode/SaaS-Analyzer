@@ -158,6 +158,10 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
   const [naviTab, setNaviTab] = useState(1);
+  const [chartTabs, setChartTabs] = useState(1);
+  const [naviTab1, setNaviTab1] = useState(1);
+  const [naviTab2, setNaviTab2] = useState(1);
+  const [naviTab3, setNaviTab3] = useState(1);
   const notificationAlertRef = React.useRef(null);
   const refToConvertFull = React.createRef();
   const refToConvertTab = React.createRef();
@@ -173,7 +177,6 @@ const Dashboard = () => {
   const [end, setEnd] = useState(100);
   const [fromFillingDate, setFromFillingDate] = useState("");
   const [toFillingDate, setToFillingDate] = useState("");
-  const [multipleSelect, setMultipleSelect] = useState(timeseriesChartLabels);
   const [tagsinput, setTagsinput] = useState(["twitter", "trends"]);
   const [secApiData, setSecApiData] = useState({});
   const [timeSeriesApiData, setTimeSeriesApiData] = useState({
@@ -672,204 +675,257 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row>
-        <Col md="4">
-          <h4 className="h4 text-white">Select what to display:</h4>
-        </Col>
-        <Col lg="8" md="8" sm="3">
-          <Select
-            className="react-select info"
-            classNamePrefix="react-select"
-            placeholder="Choose metrics"
-            name="multipleSelect"
-            closeMenuOnSelect={false}
-            isMulti
-            value={multipleSelect}
-            onChange={(value) => {
-              if (value == null) setMultipleSelect([]);
-              else setMultipleSelect(value);
-            }}
-            options={timeseriesChartLabels}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <div></div>
-      </Row>
-      <Row>
-        <Col>
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[0].label}
-            mainValue={companyApiData.ARR}
-            chartObject={chartData(
-              timeSeriesApiData.quarTS,
-              timeSeriesApiData.arrTS,
-              start,
-              end
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[0].value
-            )}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[1].label}
-            mainValue={companyApiData.NRR}
-            chartObject={chartData(
-              timeSeriesApiData.quarTS,
-              timeSeriesApiData.nrrTS,
-              start,
-              end
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[1].value
-            )}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[2].label}
-            mainValue={companyApiData.Customers}
-            chartObject={chartData(
-              timeSeriesApiData.quarTS,
-              timeSeriesApiData.custTS,
-              start,
-              end
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[2].value
-            )}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[3].label}
-            mainValue=""
-            chartObject={chartData(
-              timeSeriesApiData.quarTS,
-              timeSeriesApiData.pbTS,
-              start,
-              end
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[3].value
-            )}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[4].label}
-            mainValue=""
-            chartObject={chartData(
-              timeSeriesApiData.quarTS,
-              timeSeriesApiData.icacTS,
-              start,
-              end
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[4].value
-            )}
-          />
-        </Col>
-      </Row>
-
-      <Row>
-        <Col>
-          <ChartCard
-            type="line"
-            label={timeseriesChartLabels[5].label}
-            mainValue=""
-            chartObject={chartData(
-              timeSeriesApiData.quarTS,
-              timeSeriesApiData.ltvTS,
-              start,
-              end
-            )}
-            isVisible={multipleSelect.some(
-              (selection) => selection.value === timeseriesChartLabels[5].value
-            )}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Card className="col">
-            <CardHeader>
-              <h5 className="card-category">Link to respective Fillings</h5>
-              <CardTitle tag="h3">Data source</CardTitle>
-            </CardHeader>
-            <div
-              aria-multiselectable={true}
-              className="card-collapse"
-              id="accordion"
-              role="tablist"
-            >
-              <Card className="card-plain">
-                <CardHeader role="tab">
-                  <a
-                    aria-expanded={openedCollapseOne}
-                    href="#pablo"
-                    data-parent="#accordion"
-                    data-toggle="collapse"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenedCollapseOne(!openedCollapseOne);
-                    }}
-                  >
-                    Filling wise references
-                    <i className="tim-icons icon-minimal-down" />
-                  </a>
-                </CardHeader>
-                <Collapse
-                  role="tabpanel"
-                  isOpen={openedCollapseOne}
-                  className="text-center text-muted"
-                >
-                  <Row>
-                    <Col>
-                      <h4>Filling Date</h4>
-                    </Col>
-                    <Col>
-                      <h4>Link to Filling</h4>
-                    </Col>
-                  </Row>
-                  {Boolean(timeSeriesApiData.srcTS) &&
-                    timeSeriesApiData.srcTS.map((item, i) => {
-                      return (
-                        <Row key={i}>
-                          <Col>
-                            <h5>{timeSeriesApiData.quarTS[i]}</h5>
-                          </Col>
-                          <Col>
-                            <a
-                              href={item}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Link to Filling
-                            </a>
+        <Card style={{ backgroundColor: "#1e1e2b" }}>
+          <CardHeader>
+            <h5 className="card-category">Navigattion by Metrics</h5>
+            <CardTitle tag="h3">Key SaaS Goals</CardTitle>
+          </CardHeader>
+          <CardBody>
+            <Row>
+              <Col md="2">
+                <Nav className="nav-pills-info flex-column" pills>
+                  <NavItem>
+                    <NavLink
+                      data-toggle="tab"
+                      className={chartTabs === 1 ? "active" : ""}
+                      onClick={() => setChartTabs(1)}
+                    >
+                      <i className="tim-icons icon-chart-bar-32" />
+                      Growth
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      data-toggle="tab"
+                      className={chartTabs === 2 ? "active" : ""}
+                      onClick={() => setChartTabs(2)}
+                    >
+                      <i className="tim-icons icon-single-copy-04" />
+                      Profitability
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      data-toggle="tab"
+                      className={chartTabs === 3 ? "active" : ""}
+                      onClick={() => setChartTabs(3)}
+                    >
+                      <i className="tim-icons icon-coins" />
+                      Cash
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+              </Col>
+              <Col md="10">
+                <TabContent activeTab={chartTabs}>
+                  <TabPane tabId={1}>
+                    <Nav
+                      className="nav-pills-info nav-pills-icons justify-content-center"
+                      pills
+                    >
+                      <NavItem>
+                        <NavLink
+                          data-toggle="tab"
+                          className={naviTab1 === 1 ? "active" : ""}
+                          onClick={() => setNaviTab1(1)}
+                        >
+                          Annual Growth
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          data-toggle="tab"
+                          className={naviTab1 === 2 ? "active" : ""}
+                          onClick={() => setNaviTab1(2)}
+                        >
+                          Revenue Retention
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
+                    <TabContent
+                      className="tab-space tab-subcategories"
+                      activeTab={naviTab1}
+                    >
+                      <TabPane tabId={1}>
+                        <Row>
+                          <Col className="col-md-12">
+                            <ChartCard
+                              type="line"
+                              label="Difference in ARR"
+                              mainValue=""
+                              chartObject={chartData(
+                                timeSeriesApiData.quarTS,
+                                timeSeriesApiData.drr,
+                                start,
+                                end
+                              )}
+                              isVisible
+                            />
                           </Col>
                         </Row>
-                      );
-                    })}
-                </Collapse>
-              </Card>
-            </div>
-          </Card>
-        </Col>
+                        <Row>
+                          <Col className="col-md-12">
+                            <ChartCard
+                              type="line"
+                              label={timeseriesChartLabels[2].label}
+                              mainValue=""
+                              chartObject={chartData(
+                                timeSeriesApiData.quarTS,
+                                timeSeriesApiData.custTS,
+                                start,
+                                end
+                              )}
+                              isVisible
+                            />
+                          </Col>
+                        </Row>
+                      </TabPane>
+                      <TabPane tabId={2}>
+                        <Row>
+                          <Col className="col-md-12">
+                            <ChartCard
+                              type="line"
+                              label={timeseriesChartLabels[1].label}
+                              mainValue=""
+                              chartObject={chartData(
+                                timeSeriesApiData.quarTS,
+                                timeSeriesApiData.nrrTS,
+                                start,
+                                end
+                              )}
+                              isVisible
+                            />
+                          </Col>
+                        </Row>
+                      </TabPane>
+                    </TabContent>
+                  </TabPane>
+                  <TabPane tabId={2}>
+                    <Nav
+                      className="nav-pills-info nav-pills-icons justify-content-center"
+                      pills
+                    >
+                      <NavItem>
+                        <NavLink
+                          data-toggle="tab"
+                          className={naviTab2 === 1 ? "active" : ""}
+                          onClick={() => setNaviTab2(1)}
+                        >
+                          Customer Profitability
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          data-toggle="tab"
+                          className={naviTab2 === 2 ? "active" : ""}
+                          onClick={() => setNaviTab2(2)}
+                        >
+                          Overall Profitability
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
+                    <TabContent
+                      className="tab-space tab-subcategories"
+                      activeTab={naviTab2}
+                    >
+                      <TabPane tabId={1}>
+                        <Row>
+                          <Col className="col-md-12">
+                            <ChartCard
+                              type="line"
+                              label={timeseriesChartLabels[4].label}
+                              mainValue=""
+                              chartObject={chartData(
+                                timeSeriesApiData.quarTS,
+                                timeSeriesApiData.icacTS,
+                                start,
+                                end
+                              )}
+                              isVisible
+                            />
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col className="col-md-12">
+                            <ChartCard
+                              type="line"
+                              label={timeseriesChartLabels[5].label}
+                              mainValue=""
+                              chartObject={chartData(
+                                timeSeriesApiData.quarTS,
+                                timeSeriesApiData.ltvTS,
+                                start,
+                                end
+                              )}
+                              isVisible
+                            />
+                          </Col>
+                        </Row>
+                      </TabPane>
+                      <TabPane tabId={2}>
+                        <Row>
+                          <Col className="col-md-12">
+                            <ChartCard
+                              type="line"
+                              label={timeseriesChartLabels[0].label}
+                              mainValue=""
+                              chartObject={chartData(
+                                timeSeriesApiData.quarTS,
+                                timeSeriesApiData.arrTS,
+                                start,
+                                end
+                              )}
+                              isVisible
+                            />
+                          </Col>
+                        </Row>
+                      </TabPane>
+                    </TabContent>
+                  </TabPane>
+                  <TabPane tabId={3}>
+                    <Nav
+                      className="nav-pills-info nav-pills-icons justify-content-center"
+                      pills
+                    >
+                      <NavItem>
+                        <NavLink
+                          data-toggle="tab"
+                          className={naviTab3 === 1 ? "active" : ""}
+                          onClick={() => setNaviTab3(1)}
+                        >
+                          Months to Recover CAC
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
+                    <TabContent
+                      className="tab-space tab-subcategories"
+                      activeTab={naviTab3}
+                    >
+                      <TabPane tabId={1}>
+                        <Row>
+                          <Col className="col-md-12">
+                            <ChartCard
+                              type="line"
+                              label={timeseriesChartLabels[3].label}
+                              mainValue=""
+                              chartObject={chartData(
+                                timeSeriesApiData.quarTS,
+                                timeSeriesApiData.pbTS,
+                                start,
+                                end
+                              )}
+                              isVisible
+                            />
+                          </Col>
+                        </Row>
+                      </TabPane>
+                    </TabContent>
+                  </TabPane>
+                </TabContent>
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
       </Row>
     </div>
   );

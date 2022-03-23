@@ -1,12 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 // react plugin used to create charts
-import { Line, Bar, Pie } from "react-chartjs-2";
 // reactstrap components
 import {
   Card,
-  CardHeader,
   CardBody,
-  CardTitle,
   Row,
   Col,
   FormGroup,
@@ -14,14 +11,6 @@ import {
 } from "reactstrap";
 
 // core components
-import {
-  chartExample5,
-  chartExample6,
-  chartExample7,
-  chartExample8,
-  chartExample9,
-  chartExample10,
-} from "variables/charts.js";
 import LoadingOverlay from "react-loading-overlay";
 import NotificationAlert from "react-notification-alert";
 import { searchOptions } from "variables/companies";
