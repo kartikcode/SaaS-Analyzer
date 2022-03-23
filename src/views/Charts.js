@@ -47,12 +47,11 @@ const Charts = () => {
   };
   const downloadFile = async (data) => {
     const fileName = "masterData";
-    const json = JSON.stringify(data);
-    const blob = new Blob([json], { type: "application/json" });
+    const blob = new Blob([data], { type: "text/csv;charset=utf-8;" });
     const href = await URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = href;
-    link.download = fileName + ".json";
+    link.download = fileName + ".csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
