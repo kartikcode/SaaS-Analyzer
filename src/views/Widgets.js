@@ -48,7 +48,9 @@ const chartData = (
   startA,
   endA,
   startB,
-  endB
+  endB,
+  compA,
+  compB
 ) => {
   let max, min, label, datapoints, datapoints1, toplot, toplot1;
   try {
@@ -86,7 +88,7 @@ const chartData = (
         labels: label,
         datasets: [
           {
-            label: "Company A",
+            label: compA,
             fill: false,
             borderColor: "#1f8ef1",
             borderWidth: 2,
@@ -102,7 +104,7 @@ const chartData = (
             data: toplot,
           },
           {
-            label: "Company B",
+            label: compB,
             fill: false,
             borderColor: "#DFFF00",
             borderWidth: 2,
@@ -696,7 +698,9 @@ const Dashboard = () => {
                                 startA,
                                 endA,
                                 startB,
-                                endB
+                                endB,
+                                companyNameA.value,
+                                companyNameB.value
                               )}
                               isVisible
                             />
@@ -716,7 +720,9 @@ const Dashboard = () => {
                                 startA,
                                 endA,
                                 startB,
-                                endB
+                                endB,
+                                companyNameA.value,
+                                companyNameB.value
                               )}
                               isVisible
                             />
@@ -738,7 +744,9 @@ const Dashboard = () => {
                                 startA,
                                 endA,
                                 startB,
-                                endB
+                                endB,
+                                companyNameA.value,
+                                companyNameB.value
                               )}
                               isVisible
                             />
@@ -790,7 +798,9 @@ const Dashboard = () => {
                                 startA,
                                 endA,
                                 startB,
-                                endB
+                                endB,
+                                companyNameA.value,
+                                companyNameB.value
                               )}
                               isVisible
                             />
@@ -810,7 +820,9 @@ const Dashboard = () => {
                                 startA,
                                 endA,
                                 startB,
-                                endB
+                                endB,
+                                companyNameA.value,
+                                companyNameB.value
                               )}
                               isVisible
                             />
@@ -832,7 +844,9 @@ const Dashboard = () => {
                                 startA,
                                 endA,
                                 startB,
-                                endB
+                                endB,
+                                companyNameA.value,
+                                companyNameB.value
                               )}
                               isVisible
                             />
@@ -875,7 +889,9 @@ const Dashboard = () => {
                                 startA,
                                 endA,
                                 startA,
-                                endA
+                                endA,
+                                companyNameA.value,
+                                companyNameB.value
                               )}
                               isVisible
                             />
