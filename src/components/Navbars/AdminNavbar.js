@@ -88,13 +88,6 @@ const AdminNavbar = (props) => {
                 <i className="tim-icons icon-align-center visible-on-sidebar-regular" />
                 <i className="tim-icons icon-bullet-list-67 visible-on-sidebar-mini" />
               </Button>
-              <UncontrolledTooltip
-                delay={0}
-                target="tooltip209599"
-                placement="right"
-              >
-                Sidebar toggle
-              </UncontrolledTooltip>
             </div>
             <div
               className={classNames("navbar-toggle d-inline", {
