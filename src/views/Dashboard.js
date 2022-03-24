@@ -189,6 +189,7 @@ const Dashboard = () => {
     srcTS: [1],
     pbTS: [1],
     icacTS: [1],
+    darr: [],
   });
 
   const sendAlertNotification = async (message) => {
@@ -755,7 +756,7 @@ const Dashboard = () => {
                               mainValue=""
                               chartObject={chartData(
                                 timeSeriesApiData.quarTS,
-                                timeSeriesApiData.drr,
+                                timeSeriesApiData.darr,
                                 start,
                                 end
                               )}

@@ -690,9 +690,9 @@ const Dashboard = () => {
                               mainValue=""
                               chartObject={chartData(
                                 timeSeriesApiDataA.quarTS,
-                                timeSeriesApiDataA.drr,
+                                timeSeriesApiDataA.darr,
                                 timeSeriesApiDataB.quarTS,
-                                timeSeriesApiDataB.drr,
+                                timeSeriesApiDataB.darr,
                                 startA,
                                 endA,
                                 startB,
