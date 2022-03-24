@@ -48,7 +48,7 @@ const customStyles = {
   }),
 };
 
-const chartData = (fillingdates, data, start, end) => {
+const chartData = (fillingdates, data, start, end, labell) => {
   let max, min, label, datapoints;
   try {
     max = Math.max(...data);
@@ -75,7 +75,7 @@ const chartData = (fillingdates, data, start, end) => {
         labels: label,
         datasets: [
           {
-            label: "Data",
+            label: labell,
             fill: true,
             backgroundColor: gradientStroke,
             borderColor: "#1f8ef1",
@@ -758,7 +758,8 @@ const Dashboard = () => {
                                 timeSeriesApiData.quarTS,
                                 timeSeriesApiData.darr,
                                 start,
-                                end
+                                end,
+                                "ARR Growth"
                               )}
                               isVisible
                             />
@@ -774,7 +775,8 @@ const Dashboard = () => {
                                 timeSeriesApiData.quarTS,
                                 timeSeriesApiData.custTS,
                                 start,
-                                end
+                                end,
+                                "Total Customers"
                               )}
                               isVisible
                             />
@@ -792,7 +794,8 @@ const Dashboard = () => {
                                 timeSeriesApiData.quarTS,
                                 timeSeriesApiData.nrrTS,
                                 start,
-                                end
+                                end,
+                                "NRR"
                               )}
                               isVisible
                             />
@@ -840,7 +843,8 @@ const Dashboard = () => {
                                 timeSeriesApiData.quarTS,
                                 timeSeriesApiData.icacTS,
                                 start,
-                                end
+                                end,
+                                "Implied CAC"
                               )}
                               isVisible
                             />
@@ -856,7 +860,8 @@ const Dashboard = () => {
                                 timeSeriesApiData.quarTS,
                                 timeSeriesApiData.ltvTS,
                                 start,
-                                end
+                                end,
+                                "Implied LTV"
                               )}
                               isVisible
                             />
@@ -874,7 +879,8 @@ const Dashboard = () => {
                                 timeSeriesApiData.quarTS,
                                 timeSeriesApiData.arrTS,
                                 start,
-                                end
+                                end,
+                                "ARR"
                               )}
                               isVisible
                             />
@@ -913,7 +919,8 @@ const Dashboard = () => {
                                 timeSeriesApiData.quarTS,
                                 timeSeriesApiData.pbTS,
                                 start,
-                                end
+                                end,
+                                "Payback Period"
                               )}
                               isVisible
                             />
